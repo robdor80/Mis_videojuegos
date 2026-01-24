@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDashboard();
     updateDiskSpace();
     setupModalEvents();
-    
-    // Configurar Eventos de Búsqueda
     setupSearch();
 
     // Botón volver
@@ -56,30 +54,32 @@ function renderDashboard() {
     });
 }
 
-// --- LÓGICA DE BÚSQUEDA (NUEVO) ---
+// --- LÓGICA DE BÚSQUEDA (MEJORADA) ---
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const btn = document.getElementById('btnSearch');
 
     if(!input || !btn) return;
 
-    // Buscar al hacer clic en el botón
-    btn.addEventListener('click', () => {
-        performSearch(input.value);
-    });
-
-    // Buscar al pulsar ENTER
+    btn.addEventListener('click', () => performSearch(input.value));
     input.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') {
-            performSearch(input.value);
-        }
+        if (e.key === 'Enter') performSearch(input.value);
     });
 }
 
+// Función auxiliar para "limpiar" texto (quita tildes y normaliza espacios)
+function cleanText(text) {
+    if (!text) return "";
+    return text.toString()
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar tildes
+        .trim();
+}
+
 async function performSearch(query) {
-    const term = query.trim().toLowerCase();
+    // Limpiamos lo que escribe el usuario
+    const term = cleanText(query);
     
-    // Si borran la búsqueda, volvemos al inicio
     if (term === '') {
         goBackToDashboard();
         return;
@@ -89,14 +89,15 @@ async function performSearch(query) {
     document.getElementById('locationsSection').classList.add('hidden');
     document.getElementById('gamesSection').classList.remove('hidden');
     
-    const titleEl = document.getElementById('currentLocationTitle');
-    titleEl.innerText = `Resultados: "${query}"`;
+    document.getElementById('currentLocationTitle').innerText = `Resultados: "${query}"`;
     
     const contentDiv = document.getElementById('gamesContent');
-    contentDiv.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">Buscando en todo el inventario...</p>';
+    contentDiv.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">Buscando...</p>';
 
     try {
-        // 2. Traer TODO el inventario (Estrategia simple para bases de datos pequeñas)
+        console.log("Buscando:", term); // Debug en consola
+
+        // 2. Traer inventario
         const snapshot = await db.collection("inventario").get();
         
         if(snapshot.empty) {
@@ -104,15 +105,18 @@ async function performSearch(query) {
             return;
         }
 
-        // 3. Filtrar en memoria (JavaScript)
         const resultados = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            const nombreJuego = data.nombre.toLowerCase();
             
-            // ¿Contiene el término buscado?
-            if (nombreJuego.includes(term)) {
-                resultados.push({ id: doc.id, data: data });
+            // Protección: Si el juego no tiene nombre, lo ignoramos para que no falle
+            if (data.nombre) {
+                const nombreJuego = cleanText(data.nombre);
+                
+                // Comprobamos si incluye el término
+                if (nombreJuego.includes(term)) {
+                    resultados.push({ id: doc.id, data: data });
+                }
             }
         });
 
@@ -123,16 +127,12 @@ async function performSearch(query) {
             return;
         }
 
-        // 4. Renderizar Resultados
-        // Reutilizamos la lógica de separar por tipo si quieres, o todo junto.
-        // Aquí lo pondremos todo junto por relevancia.
+        // 3. Renderizar Resultados
         const grid = document.createElement('div');
         grid.className = 'games-grid';
         
         resultados.forEach(item => {
-            // Añadimos un pequeño texto con la ubicación para saber dónde está
             const card = createGameCard(item.data, item.id);
-            // Podríamos inyectar la ubicación visualmente en la tarjeta, pero con el detalle ya vale.
             grid.appendChild(card);
         });
         
@@ -187,8 +187,6 @@ async function openLocation(loc) {
     document.getElementById('locationsSection').classList.add('hidden');
     document.getElementById('gamesSection').classList.remove('hidden');
     document.getElementById('currentLocationTitle').innerText = loc.nombre;
-    
-    // Limpiar input de búsqueda al entrar en una ubicación específica
     document.getElementById('searchInput').value = ''; 
     
     const contentDiv = document.getElementById('gamesContent');
@@ -214,25 +212,17 @@ async function openLocation(loc) {
         });
 
         if(videojuegos.length > 0) {
-            const header = document.createElement('h3');
-            header.className = 'category-header';
-            header.innerText = 'Videojuegos';
-            contentDiv.appendChild(header);
-            const grid = document.createElement('div');
-            grid.className = 'games-grid';
-            videojuegos.forEach(c => grid.appendChild(c));
-            contentDiv.appendChild(grid);
+            const h = document.createElement('h3'); h.className='category-header'; h.innerText='Videojuegos';
+            contentDiv.appendChild(h);
+            const g = document.createElement('div'); g.className='games-grid';
+            videojuegos.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
         }
 
         if(programas.length > 0) {
-            const header = document.createElement('h3');
-            header.className = 'category-header';
-            header.innerText = 'Programas / Software';
-            contentDiv.appendChild(header);
-            const grid = document.createElement('div');
-            grid.className = 'games-grid';
-            programas.forEach(c => grid.appendChild(c));
-            contentDiv.appendChild(grid);
+            const h = document.createElement('h3'); h.className='category-header'; h.innerText='Programas / Software';
+            contentDiv.appendChild(h);
+            const g = document.createElement('div'); g.className='games-grid';
+            programas.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
         }
 
     } catch (error) {
@@ -274,10 +264,8 @@ function openDetailModal(docId, data) {
     document.getElementById('detailTitle').innerText = data.nombre;
     document.getElementById('detailDesc').innerText = data.descripcion || "Sin comentarios/notas.";
     
-    // Obtener nombre bonito de la ubicación
     const locObj = locationsData.find(l => l.id === data.ubicacion);
     const locName = locObj ? locObj.nombre : data.ubicacion;
-    
     document.getElementById('detailLoc').innerText = locName;
 
     let total = (data.tamano || 0) + (data.tamanoUpdates || 0) + (data.tamanoMods || 0);
@@ -296,7 +284,7 @@ function openDetailModal(docId, data) {
 function goBackToDashboard() {
     document.getElementById('gamesSection').classList.add('hidden');
     document.getElementById('locationsSection').classList.remove('hidden');
-    document.getElementById('searchInput').value = ''; // Limpiar búsqueda al volver
+    document.getElementById('searchInput').value = ''; 
     updateDiskSpace(); 
 }
 
@@ -307,7 +295,16 @@ function setupModalEvents() {
     const closeForm = document.querySelector('.close-form-modal');
 
     if(btnAdd) btnAdd.addEventListener('click', () => {
-        resetForm();
+        // RESETEAR FORMULARIO
+        document.getElementById('gameForm').reset();
+        document.getElementById('docId').value = "";
+        document.getElementById('formTitle').innerText = "Añadir Nuevo Título";
+        
+        // Resetear visualmente condicionales
+        document.getElementById('ubicacion').dispatchEvent(new Event('change'));
+        document.getElementById('tipo').dispatchEvent(new Event('change'));
+        document.querySelectorAll('.sub-field').forEach(el => el.classList.add('hidden'));
+
         formModal.classList.add('active');
     });
 
