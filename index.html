@@ -13,7 +13,9 @@
         <div class="logo">
             <i class="fa-solid fa-hard-drive"></i> Mis Videojuegos
         </div>
-        <button id="btnAddGame" class="btn-icon"><i class="fa-solid fa-plus"></i></button>
+        <button id="btnAddGame" class="btn-icon">
+            <i class="fa-solid fa-plus"></i>
+        </button>
     </header>
 
     <main class="container">
@@ -26,6 +28,47 @@
         </section>
 
     </main>
+
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Añadir Nuevo Título</h2>
+            
+            <form id="gameForm">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" placeholder="Ej: Cyberpunk 2077">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="tipo">
+                            <option value="videojuego">Videojuego</option>
+                            <option value="programa">Programa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación</label>
+                        <select id="ubicacion">
+                            <option value="steam">Steam</option>
+                            <option value="ubisoft">Ubisoft</option>
+                            <option value="m2">SSD Fanxiang (M.2)</option>
+                            <option value="hdd1">Disco Kesu (HDD 1)</option>
+                            <option value="hdd2">WD Elements (HDD 2)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tamaño (GB)</label>
+                    <input type="number" id="tamano" step="0.01" placeholder="0.00">
+                </div>
+
+                <button type="button" class="btn-primary" onclick="alert('Funcionalidad de guardar pendiente de conectar a Firebase')">Guardar</button>
+            </form>
+        </div>
+    </div>
 
     <script src="js/data.js"></script>
     <script src="js/ui.js"></script>

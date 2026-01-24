@@ -4,109 +4,77 @@
     --bg-card: #1e1e1e;
     --text-main: #ffffff;
     --text-muted: #b0b0b0;
-    --accent: #bb86fc; /* Morado gaming */
+    --accent: #bb86fc; 
     --card-hover: #2d2d2d;
 }
 
-/* --- RESET BÁSICO --- */
+/* --- RESET --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    font-family: sans-serif;
-    padding-bottom: 50px;
-}
-
-.container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+body { background-color: var(--bg-body); color: var(--text-main); font-family: sans-serif; padding-bottom: 50px; }
+.container { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
 /* --- HEADER --- */
 .main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: var(--bg-card);
-    border-bottom: 1px solid #333;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 20px; background-color: var(--bg-card);
+    border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100;
 }
-
 .logo { font-weight: bold; font-size: 1.2rem; color: var(--accent); }
-.btn-icon { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
+.btn-icon { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 5px; }
 
-/* --- GRID DE UNIDADES (La clave) --- */
-.locations-grid {
-    display: grid;
-    /* MÓVIL: 1 Columna para ver bien los datos */
-    grid-template-columns: 1fr; 
-    gap: 20px;
-    margin-top: 20px;
-}
+/* --- GRID UNIDADES --- */
+.locations-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; }
+@media (min-width: 600px) { .locations-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .locations-grid { grid-template-columns: repeat(3, 1fr); } }
 
-/* TABLET Y PC: Responsive */
-@media (min-width: 600px) {
-    .locations-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (min-width: 1024px) {
-    .locations-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* --- TARJETA DE UNIDAD --- */
+/* --- TARJETAS --- */
 .location-card {
-    background-color: var(--bg-card);
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer; /* Clickable */
-    transition: transform 0.2s, background-color 0.2s;
-    border: 1px solid #333;
-    display: flex;
-    flex-direction: column;
+    background-color: var(--bg-card); border-radius: 12px; overflow: hidden;
+    cursor: pointer; transition: transform 0.2s, background-color 0.2s;
+    border: 1px solid #333; display: flex; flex-direction: column;
 }
-
-.location-card:active { transform: scale(0.98); } /* Efecto pulsación en móvil */
+.location-card:active { transform: scale(0.98); }
 .location-card:hover { background-color: var(--card-hover); border-color: var(--accent); }
 
-/* IMAGEN DEL DISCO/LOGO */
 .card-image-box {
-    width: 100%;
-    height: 150px;
-    background-color: #2a2a2a; /* Fondo gris para resaltar PNGs oscuros */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #333;
+    width: 100%; height: 150px; background-color: #2a2a2a;
+    display: flex; justify-content: center; align-items: center;
+    padding: 10px; border-bottom: 1px solid #333;
 }
-
 .card-image-box img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain; /* IMPORTANTE: No recorta el disco, lo ajusta */
-    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); /* Sombrita al PNG */
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
 }
-
-/* INFO DEBAJO DE LA IMAGEN */
 .card-info { padding: 15px; }
 .card-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
-.card-type { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-/* BARRA DE ESPACIO (Solo visual por ahora) */
-.space-bar-container {
-    margin-top: 10px;
-    background: #333;
-    height: 6px;
-    border-radius: 3px;
-    width: 100%;
-    overflow: hidden;
+.space-bar-container { margin-top: 10px; background: #333; height: 6px; border-radius: 3px; width: 100%; overflow: hidden; }
+.space-bar-fill { height: 100%; background-color: var(--accent); width: 0%; }
+
+/* --- MODAL (Ventana Emergente) --- */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.85); z-index: 1000;
+    justify-content: center; align-items: center;
 }
-.space-bar-fill {
-    height: 100%;
-    background-color: var(--accent);
-    width: 0%; /* Se llenará con JS */
+.modal.active { display: flex; } /* Se muestra con JS */
+
+.modal-content {
+    background-color: var(--bg-card); padding: 25px; border-radius: 12px;
+    width: 90%; max-width: 500px; border: 1px solid #444; position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
+.form-group { margin-bottom: 15px; }
+.form-row { display: flex; gap: 15px; }
+.form-row .form-group { flex: 1; }
+label { display: block; margin-bottom: 5px; color: #bbb; font-size: 0.9rem; }
+input, select {
+    width: 100%; padding: 10px; background: #121212;
+    border: 1px solid #444; border-radius: 6px; color: white; font-size: 1rem;
+}
+.btn-primary {
+    width: 100%; padding: 12px; background-color: var(--accent);
+    border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;
 }

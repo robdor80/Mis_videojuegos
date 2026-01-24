@@ -1,18 +1,22 @@
 // js/ui.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Renderizar Unidades
+    renderDashboard();
+
+    // 2. Configurar eventos del Modal (Botón +)
+    setupModalEvents();
+});
+
+function renderDashboard() {
     const container = document.getElementById('locationsContainer');
+    if(!container) return;
     
-    // Limpiamos (por seguridad)
     container.innerHTML = '';
 
-    // Recorremos tus datos y creamos las tarjetas
     locationsData.forEach(loc => {
-        
-        // Determinar si mostramos barra de espacio (solo discos físicos)
         let espacioHtml = '';
         if(loc.tipo === 'disk') {
-            // Placeholder: fingimos que está al 50% lleno para que veas la barra
             espacioHtml = `
                 <div class="space-bar-container">
                     <div class="space-bar-fill" style="width: 50%"></div>
@@ -23,10 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
             espacioHtml = `<small style="color: #666">Nube / Librería Virtual</small>`;
         }
 
-        // Crear tarjeta HTML
         const card = document.createElement('div');
         card.className = 'location-card';
-        card.onclick = () => alert('Has hecho click en ' + loc.nombre); // Clickable
+        card.onclick = () => alert('Aquí se abrirá la lista de: ' + loc.nombre);
         
         card.innerHTML = `
             <div class="card-image-box">
@@ -37,7 +40,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${espacioHtml}
             </div>
         `;
-
         container.appendChild(card);
     });
-});
+}
+
+function setupModalEvents() {
+    const modal = document.getElementById('formModal');
+    const btnAdd = document.getElementById('btnAddGame');
+    const btnClose = document.querySelector('.close-modal');
+
+    // Abrir
+    if (btnAdd) {
+        btnAdd.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+    }
+
+    // Cerrar con X
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+    }
+
+    // Cerrar click fuera
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+}
