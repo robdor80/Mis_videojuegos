@@ -10,12 +10,21 @@
 <body>
 
     <header class="main-header">
-        <div class="logo">
-            <i class="fa-solid fa-hard-drive"></i> Mis Videojuegos
+        <div class="logo-container">
+            <div class="logo" onclick="window.location.reload()"> <i class="fa-solid fa-hard-drive"></i> <span class="logo-text">Mis Videojuegos</span>
+            </div>
         </div>
-        <button id="btnAddGame" class="btn-icon">
-            <i class="fa-solid fa-plus"></i>
-        </button>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar juego o programa...">
+            <button id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+
+        <div class="actions-container">
+            <button id="btnAddGame" class="btn-icon">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
     </header>
 
     <main class="container">
@@ -44,7 +53,9 @@
             <span class="close-modal close-form-modal">&times;</span>
             <h2 id="formTitle">Gestión de Inventario</h2>
             <form id="gameForm">
-                <input type="hidden" id="docId"> <div class="form-group">
+                <input type="hidden" id="docId">
+                
+                <div class="form-group">
                     <label>Nombre *</label>
                     <input type="text" id="nombre" required placeholder="Ej: Cyberpunk 2077">
                 </div>
@@ -140,8 +151,7 @@
                         <p id="detailDesc">Sin descripción.</p>
                     </div>
 
-                    <div id="detailExtra" class="detail-extra-box hidden">
-                        </div>
+                    <div id="detailExtra" class="detail-extra-box hidden"></div>
 
                     <div class="detail-actions">
                         <button id="btnEditGame" class="btn-primary">

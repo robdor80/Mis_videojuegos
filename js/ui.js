@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDiskSpace();
     setupModalEvents();
     
+    // Configurar Eventos de Búsqueda
+    setupSearch();
+
     // Botón volver
     const btnBack = document.getElementById('btnBack');
     if(btnBack) btnBack.addEventListener('click', goBackToDashboard);
@@ -13,11 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnEdit = document.getElementById('btnEditGame');
     if(btnEdit) {
         btnEdit.addEventListener('click', () => {
-            // "currentGameData" y "currentGameId" son variables globales temporales que definiremos abajo
             if(window.currentGameId && window.currentGameData) {
-                // Cerrar modal detalle
                 document.getElementById('detailModal').classList.remove('active');
-                // Abrir modal formulario cargado
                 openEditForm(window.currentGameId, window.currentGameData);
             }
         });
@@ -56,6 +56,95 @@ function renderDashboard() {
     });
 }
 
+// --- LÓGICA DE BÚSQUEDA (NUEVO) ---
+function setupSearch() {
+    const input = document.getElementById('searchInput');
+    const btn = document.getElementById('btnSearch');
+
+    if(!input || !btn) return;
+
+    // Buscar al hacer clic en el botón
+    btn.addEventListener('click', () => {
+        performSearch(input.value);
+    });
+
+    // Buscar al pulsar ENTER
+    input.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            performSearch(input.value);
+        }
+    });
+}
+
+async function performSearch(query) {
+    const term = query.trim().toLowerCase();
+    
+    // Si borran la búsqueda, volvemos al inicio
+    if (term === '') {
+        goBackToDashboard();
+        return;
+    }
+
+    // 1. Preparar la vista
+    document.getElementById('locationsSection').classList.add('hidden');
+    document.getElementById('gamesSection').classList.remove('hidden');
+    
+    const titleEl = document.getElementById('currentLocationTitle');
+    titleEl.innerText = `Resultados: "${query}"`;
+    
+    const contentDiv = document.getElementById('gamesContent');
+    contentDiv.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">Buscando en todo el inventario...</p>';
+
+    try {
+        // 2. Traer TODO el inventario (Estrategia simple para bases de datos pequeñas)
+        const snapshot = await db.collection("inventario").get();
+        
+        if(snapshot.empty) {
+            contentDiv.innerHTML = '<p style="text-align:center;color:#666">Inventario vacío.</p>';
+            return;
+        }
+
+        // 3. Filtrar en memoria (JavaScript)
+        const resultados = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const nombreJuego = data.nombre.toLowerCase();
+            
+            // ¿Contiene el término buscado?
+            if (nombreJuego.includes(term)) {
+                resultados.push({ id: doc.id, data: data });
+            }
+        });
+
+        contentDiv.innerHTML = '';
+
+        if (resultados.length === 0) {
+            contentDiv.innerHTML = `<p style="text-align:center;color:#888; margin-top:20px;">No se encontraron juegos con "${query}".</p>`;
+            return;
+        }
+
+        // 4. Renderizar Resultados
+        // Reutilizamos la lógica de separar por tipo si quieres, o todo junto.
+        // Aquí lo pondremos todo junto por relevancia.
+        const grid = document.createElement('div');
+        grid.className = 'games-grid';
+        
+        resultados.forEach(item => {
+            // Añadimos un pequeño texto con la ubicación para saber dónde está
+            const card = createGameCard(item.data, item.id);
+            // Podríamos inyectar la ubicación visualmente en la tarjeta, pero con el detalle ya vale.
+            grid.appendChild(card);
+        });
+        
+        contentDiv.appendChild(grid);
+
+    } catch (error) {
+        console.error("Error en búsqueda:", error);
+        contentDiv.innerHTML = `<p style="color:red">Error al buscar: ${error.message}</p>`;
+    }
+}
+
+
 // --- CÁLCULO DE ESPACIO ---
 async function updateDiskSpace() {
     try {
@@ -93,11 +182,14 @@ async function updateDiskSpace() {
     } catch (e) { console.error(e); }
 }
 
-// --- ABRIR UBICACIÓN Y SEPARAR POR CATEGORÍA ---
+// --- ABRIR UBICACIÓN ---
 async function openLocation(loc) {
     document.getElementById('locationsSection').classList.add('hidden');
     document.getElementById('gamesSection').classList.remove('hidden');
     document.getElementById('currentLocationTitle').innerText = loc.nombre;
+    
+    // Limpiar input de búsqueda al entrar en una ubicación específica
+    document.getElementById('searchInput').value = ''; 
     
     const contentDiv = document.getElementById('gamesContent');
     contentDiv.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">Cargando inventario...</p>';
@@ -111,38 +203,32 @@ async function openLocation(loc) {
             return;
         }
 
-        // SEPARAR RESULTADOS
         const videojuegos = [];
         const programas = [];
 
         snapshot.forEach(doc => {
             const data = doc.data();
-            const card = createGameCard(data, doc.id); // Pasamos ID para editar luego
-            
+            const card = createGameCard(data, doc.id);
             if(data.tipo === 'programa') programas.push(card);
             else videojuegos.push(card);
         });
 
-        // 1. RENDERIZAR VIDEOJUEGOS
         if(videojuegos.length > 0) {
             const header = document.createElement('h3');
             header.className = 'category-header';
             header.innerText = 'Videojuegos';
             contentDiv.appendChild(header);
-
             const grid = document.createElement('div');
             grid.className = 'games-grid';
             videojuegos.forEach(c => grid.appendChild(c));
             contentDiv.appendChild(grid);
         }
 
-        // 2. RENDERIZAR PROGRAMAS
         if(programas.length > 0) {
             const header = document.createElement('h3');
             header.className = 'category-header';
             header.innerText = 'Programas / Software';
             contentDiv.appendChild(header);
-
             const grid = document.createElement('div');
             grid.className = 'games-grid';
             programas.forEach(c => grid.appendChild(c));
@@ -155,7 +241,7 @@ async function openLocation(loc) {
     }
 }
 
-// --- CREAR TARJETA Y EVENTO DETALLE ---
+// --- CREAR TARJETA ---
 function createGameCard(data, docId) {
     const div = document.createElement('div');
     div.className = 'game-card';
@@ -175,38 +261,34 @@ function createGameCard(data, docId) {
         </div>
     `;
 
-    // AL CLICK -> ABRIR DETALLE (NO EDITAR DIRECTAMENTE)
     div.onclick = () => openDetailModal(docId, data);
-
     return div;
 }
 
-// --- ABRIR MODAL DETALLE ---
+// --- DETALLE MODAL ---
 function openDetailModal(docId, data) {
-    // Guardamos en variables globales para usarlas al pulsar "Editar"
     window.currentGameId = docId;
     window.currentGameData = data;
 
-    // Rellenar datos
     document.getElementById('detailImg').src = data.imagenUrl || '';
     document.getElementById('detailTitle').innerText = data.nombre;
     document.getElementById('detailDesc').innerText = data.descripcion || "Sin comentarios/notas.";
     
-    const locName = locationsData.find(l => l.id === data.ubicacion)?.nombre || data.ubicacion;
+    // Obtener nombre bonito de la ubicación
+    const locObj = locationsData.find(l => l.id === data.ubicacion);
+    const locName = locObj ? locObj.nombre : data.ubicacion;
+    
     document.getElementById('detailLoc').innerText = locName;
 
     let total = (data.tamano || 0) + (data.tamanoUpdates || 0) + (data.tamanoMods || 0);
     document.getElementById('detailSize').innerText = total.toFixed(2);
 
-    // Extra info
     const extraDiv = document.getElementById('detailExtra');
     extraDiv.innerHTML = '';
     if(data.tieneMods) extraDiv.innerHTML += `<p>• Mods: ${data.modsDescripcion}</p>`;
     if(data.tieneSavegame) extraDiv.innerHTML += `<p>• Savegame: ${data.savegameNotas}</p>`;
     
     extraDiv.className = (extraDiv.innerHTML === '') ? 'detail-extra-box hidden' : 'detail-extra-box';
-
-    // Mostrar modal
     document.getElementById('detailModal').classList.add('active');
 }
 
@@ -214,30 +296,27 @@ function openDetailModal(docId, data) {
 function goBackToDashboard() {
     document.getElementById('gamesSection').classList.add('hidden');
     document.getElementById('locationsSection').classList.remove('hidden');
+    document.getElementById('searchInput').value = ''; // Limpiar búsqueda al volver
     updateDiskSpace(); 
 }
 
 // --- EVENTOS MODALES ---
 function setupModalEvents() {
-    // Formulario (Añadir)
     const formModal = document.getElementById('formModal');
     const btnAdd = document.getElementById('btnAddGame');
     const closeForm = document.querySelector('.close-form-modal');
 
     if(btnAdd) btnAdd.addEventListener('click', () => {
-        // Al dar al más, es ALTA NUEVA -> Limpiamos form
         resetForm();
         formModal.classList.add('active');
     });
 
     if(closeForm) closeForm.addEventListener('click', () => formModal.classList.remove('active'));
 
-    // Detalle
     const detailModal = document.getElementById('detailModal');
     const closeDetail = document.querySelector('.close-detail-modal');
     if(closeDetail) closeDetail.addEventListener('click', () => detailModal.classList.remove('active'));
     
-    // Cerrar con fondo
     window.addEventListener('click', (e) => {
         if(e.target === formModal) formModal.classList.remove('active');
         if(e.target === detailModal) detailModal.classList.remove('active');
