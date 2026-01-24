@@ -5,13 +5,10 @@
     --bg-body: #121212;
     --bg-card: #1e1e1e;
     --text-main: #ffffff;
-    --text-muted: #b0b0b0;
-    --accent: #bb86fc;         /* Morado principal */
+    --accent: #bb86fc;
     --accent-hover: #9e47f5;
-    --accent-contrast: #000000; /* Color texto sobre acento */
     --card-hover: #2d2d2d;
     --badge-dlss: #76b900;
-    --danger: #cf6679;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,98 +22,120 @@ body {
 .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
 
 /* =========================================
-   HEADER CON IMAGEN DE FONDO
+   HEADER TIPO PORTADA (HERO)
    ========================================= */
-.main-header {
-    /* Configuración de la imagen */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('../assets/header.png');
+.hero-header {
+    width: 100%;
+    height: 220px; /* Altura generosa para ver la imagen */
+    background-image: url('../assets/header.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    
-    /* Tamaño y Layout */
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    padding: 25px 30px; /* Más alto para que se luzca la imagen */
-    border-bottom: 1px solid #333; 
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-    gap: 20px;
-}
-
-/* Logo: Texto con sombra para leerse bien sobre cualquier imagen */
-.logo-container { flex-shrink: 0; }
-.logo { 
-    font-weight: 800; font-size: 1.4rem; color: #fff; 
-    display: flex; gap: 10px; cursor: pointer; align-items: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* Sombra de texto vital */
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-.logo i { color: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
-.logo-text { display: none; } 
-@media (min-width: 600px) { .logo-text { display: block; } }
-
-/* Buscador: Estilo "Glass" (Cristal oscuro) */
-.search-bar {
-    flex-grow: 1; 
-    max-width: 500px;
     position: relative;
+    border-bottom: 4px solid var(--accent); /* Línea divisoria de color */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+/* Sombra interior para que los iconos blancos se vean siempre */
+.hero-header::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    pointer-events: none;
+}
+
+.header-top-bar {
+    position: relative;
+    z-index: 2; /* Por encima de la sombra */
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
 }
 
-.search-bar input {
-    width: 100%;
-    padding: 10px 20px;
-    padding-right: 45px;
-    border-radius: 30px; /* Más redondeado */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background-color: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente */
-    color: white;
-    font-size: 1rem;
-    backdrop-filter: blur(5px); /* Efecto borroso detrás */
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
-.search-bar input:focus { 
-    border-color: var(--accent); 
-    background-color: rgba(0, 0, 0, 0.85);
-    outline: none;
-}
-.search-bar input::placeholder { color: #ccc; }
-
-.search-bar button {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: #ddd; cursor: pointer;
-    padding: 8px; border-radius: 50%; transition: color 0.2s;
-}
-.search-bar button:hover { color: var(--accent); }
-
-/* Acciones: Botón + rediseñado para destacar */
-.actions-container { flex-shrink: 0; }
-
-.btn-add-floating {
-    background-color: var(--accent);
-    color: var(--accent-contrast);
-    border: none;
+/* Iconos de Navegación */
+.nav-icon {
     width: 45px; height: 45px;
-    border-radius: 50%; /* Círculo perfecto */
-    font-size: 1.2rem;
-    cursor: pointer;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    backdrop-filter: blur(5px);
     display: flex; justify-content: center; align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* Sombra para que flote */
-    transition: transform 0.2s, background-color 0.2s;
+    font-size: 1.4rem; color: white;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.2s ease;
 }
-.btn-add-floating:hover {
-    background-color: var(--text-main);
-    transform: scale(1.1) rotate(90deg); /* Pequeño giro al pasar ratón */
+
+.nav-icon:hover {
+    background-color: var(--accent);
+    color: black;
+    transform: scale(1.1);
+    border-color: var(--accent);
+}
+
+/* El botón + destaca un poco más */
+.btn-add {
+    background-color: var(--accent);
+    color: black;
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px var(--accent); /* Resplandor */
+}
+.btn-add:hover {
+    background-color: white;
+    box-shadow: 0 0 20px white;
 }
 
 /* =========================================
-   DASHBOARD (UBICACIONES)
+   ZONA DE BÚSQUEDA (NUEVA UBICACIÓN)
    ========================================= */
-.page-title { margin-bottom: 20px; font-size: 1.5rem; border-left: 4px solid var(--accent); padding-left: 15px; }
+.search-section {
+    margin-top: -35px; /* Truco visual: sube un poco para pisar el header o quedarse pegado */
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.search-wrapper {
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border-radius: 30px;
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 15px 25px;
+    padding-right: 50px;
+    border-radius: 30px;
+    border: 2px solid #333;
+    background-color: #1a1a1a;
+    color: white;
+    font-size: 1.1rem;
+    transition: border-color 0.3s;
+}
+
+.search-wrapper input:focus {
+    border-color: var(--accent);
+    outline: none;
+    background-color: #222;
+}
+
+.search-wrapper button {
+    position: absolute;
+    right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: #888;
+    cursor: pointer; padding: 10px; font-size: 1.2rem;
+}
+.search-wrapper button:hover { color: var(--accent); }
+
+/* =========================================
+   RESTO DE ESTILOS (IGUAL QUE ANTES)
+   ========================================= */
 .locations-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 @media (min-width: 600px) { .locations-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .locations-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -124,7 +143,6 @@ body {
 .location-card {
     background-color: var(--bg-card); border-radius: 12px; overflow: hidden;
     cursor: pointer; transition: transform 0.2s; border: 1px solid #333;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 .location-card:hover { transform: translateY(-5px); border-color: var(--accent); }
 .card-image-box { height: 160px; background-color: #252525; padding: 20px; display: flex; justify-content: center; }
@@ -133,47 +151,28 @@ body {
 .space-bar-container { margin-top: 10px; background: #333; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
 .space-bar-fill { height: 100%; background-color: var(--accent); width: 0%; transition: width 0.5s ease; }
 
-/* =========================================
-   LISTADO Y SEPARADORES
-   ========================================= */
 .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-.btn-secondary { background: #333; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
-.btn-secondary:hover { background: #444; }
+.btn-secondary { background: #333; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.category-header { margin: 30px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid var(--accent); color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
 
-.category-header {
-    margin: 30px 0 15px 0; padding-bottom: 10px;
-    border-bottom: 2px solid var(--accent);
-    color: var(--accent); text-transform: uppercase; font-size: 1rem; letter-spacing: 1px;
-}
 .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 @media (min-width: 600px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 900px) { .games-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (min-width: 1200px) { .games-grid { grid-template-columns: repeat(5, 1fr); } }
 
-.game-card {
-    background-color: var(--bg-card); border-radius: 8px; overflow: hidden;
-    position: relative; aspect-ratio: 2/3; cursor: pointer; border: 1px solid transparent;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
+.game-card { background: var(--bg-card); border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 2/3; cursor: pointer; border: 1px solid transparent; }
 .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.6); border-color: var(--accent); }
 .game-cover { width: 100%; height: 100%; object-fit: cover; }
-.game-info-overlay {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6), rgba(0,0,0,0));
-    padding: 40px 10px 10px; color: white;
-}
-.game-title { font-size: 0.95rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 2px 2px black;}
+.game-info-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0)); padding: 40px 10px 10px; color: white; }
+.game-title { font-size: 0.95rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; text-shadow: 0 2px 2px black; }
 .game-meta { font-size: 0.75rem; color: #ddd; display: flex; justify-content: space-between; }
 .badge-dlss { background: var(--badge-dlss); color: black; padding: 2px 5px; border-radius: 3px; font-weight: 800; font-size: 0.65rem; }
 .badge-mods { background: var(--accent); color: black; padding: 2px 5px; border-radius: 3px; font-weight: 800; font-size: 0.65rem; }
 
-/* =========================================
-   MODALES
-   ========================================= */
+/* MODALES */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
 .modal.active { display: flex; animation: fadeInModal 0.2s ease-out; }
 @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
-
 .modal-content { background-color: var(--bg-card); padding: 25px; border-radius: 12px; width: 95%; max-width: 500px; border: 1px solid #444; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
 .modal-scrollable { max-height: 90vh; overflow-y: auto; }
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
@@ -185,7 +184,6 @@ body {
 .detail-desc-box { background: #252525; padding: 15px; border-radius: 6px; border-left: 3px solid #666; font-size: 0.95rem; line-height: 1.5; color: #ddd; }
 .detail-extra-box { margin-top: 10px; font-size: 0.9rem; color: #bbb; font-style: italic; background: #1a1a1a; padding: 10px; border-radius: 6px; }
 
-/* Formularios */
 .form-group { margin-bottom: 15px; }
 .form-row { display: flex; gap: 15px; } .form-row .form-group { flex: 1; }
 label { display: block; margin-bottom: 5px; color: #bbb; font-size: 0.9rem; }

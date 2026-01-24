@@ -9,29 +9,29 @@
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="logo-container">
-            <div class="logo" onclick="window.location.reload()">
-                <i class="fa-solid fa-gamepad"></i> <span class="logo-text">Mis Videojuegos</span>
+    <header class="hero-header">
+        <div class="header-top-bar">
+            <div class="nav-icon" onclick="window.location.reload()" title="Inicio">
+                <i class="fa-solid fa-gamepad"></i>
             </div>
-        </div>
-
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Buscar título...">
-            <button id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </div>
-
-        <div class="actions-container">
-            <button id="btnAddGame" class="btn-add-floating" title="Añadir juego">
+            
+            <button id="btnAddGame" class="nav-icon btn-add" title="Añadir Nuevo">
                 <i class="fa-solid fa-plus"></i>
             </button>
         </div>
     </header>
 
     <main class="container">
+
+        <section class="search-section">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="¿Qué quieres jugar hoy?">
+                <button id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </section>
         
         <section id="locationsSection">
-            <h1 class="page-title">Mi Colección</h1> <div id="locationsContainer" class="locations-grid"></div>
+            <div id="locationsContainer" class="locations-grid"></div>
         </section>
 
         <section id="gamesSection" class="hidden">
@@ -52,7 +52,6 @@
             <h2 id="formTitle">Gestión de Inventario</h2>
             <form id="gameForm">
                 <input type="hidden" id="docId">
-                
                 <div class="form-group">
                     <label>Nombre *</label>
                     <input type="text" id="nombre" required placeholder="Ej: Cyberpunk 2077">
@@ -80,7 +79,6 @@
                     <label>Tamaño Base (GB) *</label>
                     <input type="number" id="tamano" step="0.01" required>
                 </div>
-
                 <div id="locationFields" class="conditional-section hidden">
                     <h3 class="section-divider">Datos Locales</h3>
                     <div class="form-group-check">
@@ -96,7 +94,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="typeFields" class="conditional-section">
                     <h3 class="section-divider">Datos Gráficos</h3>
                     <div class="form-group-check">
@@ -112,7 +109,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label>Descripción / Notas</label>
                     <textarea id="descripcion" rows="3"></textarea>
@@ -121,7 +117,6 @@
                     <label>URL Imagen *</label>
                     <input type="url" id="imagenUrl" required>
                 </div>
-                
                 <button type="submit" class="btn-primary">Guardar Datos</button>
             </form>
         </div>
