@@ -26,17 +26,16 @@ body {
    ========================================= */
 .hero-header {
     width: 100%;
-    height: 220px; /* Altura generosa para ver la imagen */
+    height: 220px;
     background-image: url('../assets/header.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     position: relative;
-    border-bottom: 4px solid var(--accent); /* Línea divisoria de color */
+    border-bottom: 4px solid var(--accent);
     box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-/* Sombra interior para que los iconos blancos se vean siempre */
 .hero-header::after {
     content: '';
     position: absolute;
@@ -47,18 +46,19 @@ body {
 
 .header-top-bar {
     position: relative;
-    z-index: 2; /* Por encima de la sombra */
+    z-index: 2;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* Alineación arriba para permitir columna vertical */
     padding: 20px;
+    height: 100%;
 }
 
 /* Iconos de Navegación */
 .nav-icon {
     width: 45px; height: 45px;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
     display: flex; justify-content: center; align-items: center;
     font-size: 1.4rem; color: white;
@@ -74,23 +74,43 @@ body {
     border-color: var(--accent);
 }
 
-/* El botón + destaca un poco más */
+/* --- NUEVO: CONTENEDOR DE ACCIONES (Vertical) --- */
+.header-actions {
+    display: flex;
+    flex-direction: column; /* Apila los botones verticalmente */
+    gap: 15px;
+}
+
+/* Botón Añadir (+) */
 .btn-add {
     background-color: var(--accent);
     color: black;
     font-size: 1.2rem;
-    box-shadow: 0 0 15px var(--accent); /* Resplandor */
+    box-shadow: 0 0 15px var(--accent);
 }
 .btn-add:hover {
     background-color: white;
     box-shadow: 0 0 20px white;
 }
 
+/* Botón Ver Todo (Blanco) */
+.btn-show-all {
+    background-color: white;
+    color: black;
+    font-size: 1.1rem;
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+}
+.btn-show-all:hover {
+    background-color: var(--accent);
+    color: white;
+    box-shadow: 0 0 20px var(--accent);
+}
+
 /* =========================================
-   ZONA DE BÚSQUEDA (NUEVA UBICACIÓN)
+   ZONA DE BÚSQUEDA
    ========================================= */
 .search-section {
-    margin-top: -35px; /* Truco visual: sube un poco para pisar el header o quedarse pegado */
+    margin-top: -35px;
     margin-bottom: 30px;
     position: relative;
     z-index: 10;
@@ -134,7 +154,7 @@ body {
 .search-wrapper button:hover { color: var(--accent); }
 
 /* =========================================
-   DASHBOARD (UBICACIONES)
+   DASHBOARD & LISTADO
    ========================================= */
 .locations-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 @media (min-width: 600px) { .locations-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -151,9 +171,6 @@ body {
 .space-bar-container { margin-top: 10px; background: #333; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
 .space-bar-fill { height: 100%; background-color: var(--accent); width: 0%; transition: width 0.5s ease; }
 
-/* =========================================
-   LISTADO Y SEPARADORES
-   ========================================= */
 .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
 .btn-secondary { background: #333; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .category-header { margin: 30px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid var(--accent); color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
@@ -200,91 +217,41 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
 .btn-primary:hover { filter: brightness(1.2); }
 .conditional-section { background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--accent); }
 
-/* MEJORA CHECKBOXES: ALINEACIÓN Y TAMAÑO */
-.form-group-check {
-    margin-bottom: 10px;
-}
-
+/* MEJORA CHECKBOXES */
+.form-group-check { margin-bottom: 10px; }
 .form-group-check label {
-    display: flex; 
-    justify-content: space-between; /* Texto izq, casilla derecha */
-    align-items: center;            /* Alineación vertical perfecta */
-    background-color: #1a1a1a;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    cursor: pointer;
-    color: #e0e0e0;
-    font-size: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background-color: #1a1a1a; padding: 12px 15px; border-radius: 8px;
+    border: 1px solid #333; cursor: pointer; color: #e0e0e0; font-size: 1rem;
     transition: border-color 0.2s, background-color 0.2s;
 }
-
-.form-group-check label:hover {
-    border-color: var(--accent);
-    background-color: #222;
-}
-
-/* El cuadradito */
+.form-group-check label:hover { border-color: var(--accent); background-color: #222; }
 .form-group-check input[type="checkbox"] {
-    width: 24px;   /* Más grande */
-    height: 24px;  /* Más grande */
-    margin: 0;
-    accent-color: var(--accent);
-    cursor: pointer;
-    flex-shrink: 0;
+    width: 24px; height: 24px; margin: 0; accent-color: var(--accent);
+    cursor: pointer; flex-shrink: 0;
 }
-
-/* Sub-campos (lo que se despliega) */
 .sub-field { 
-    margin-top: 8px; 
-    margin-left: 0; 
-    padding: 15px; 
-    background: #1a1a1a; 
-    border-radius: 6px; 
-    border: 1px solid #333; 
-    border-left: 3px solid var(--accent);
+    margin-top: 8px; margin-left: 0; padding: 15px; background: #1a1a1a; 
+    border-radius: 6px; border: 1px solid #333; border-left: 3px solid var(--accent);
     animation: fadeIn 0.3s ease;
 }
-
 .hidden { display: none !important; }
 
 /* =========================================
    BOTÓN VOLVER ARRIBA
    ========================================= */
 .btn-scroll-top {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%; /* Redondo */
-    background-color: var(--accent);
-    color: black;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-    z-index: 90; /* Por encima del contenido, pero debajo de modales */
-    
-    /* Estado inicial: oculto y un poco más abajo */
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
+    position: fixed; bottom: 30px; right: 30px;
+    width: 50px; height: 50px; border-radius: 50%;
+    background-color: var(--accent); color: black;
+    border: none; font-size: 1.2rem; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6); z-index: 90;
+    opacity: 0; visibility: hidden; transform: translateY(20px);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
     display: flex; justify-content: center; align-items: center;
 }
-
-/* Clase para mostrarlo (se añade con JS) */
-.btn-scroll-top.visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-/* Efecto Hover: Similar al botón +, pero en vez de girar, "salta" hacia arriba */
+.btn-scroll-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
 .btn-scroll-top:hover {
-    background-color: white; /* Se pone blanco como el botón + */
-    transform: scale(1.1) translateY(-5px); 
+    background-color: white; transform: scale(1.1) translateY(-5px); 
     box-shadow: 0 10px 20px rgba(255, 255, 255, 0.3);
 }

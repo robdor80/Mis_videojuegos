@@ -2,7 +2,7 @@
 
 // ESTADO GLOBAL DE LA APP (Para saber dónde estamos)
 window.appState = {
-    view: 'dashboard', // dashboard | location | search
+    view: 'dashboard', // dashboard | location | search | all
     data: null         // objeto ubicación o string de búsqueda
 };
 
@@ -11,11 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDiskSpace();
     setupModalEvents();
     setupSearch();
-    setupScrollTop(); // <--- PARTE A: Iniciamos el botón volver arriba
+    setupScrollTop();
 
     // Evento botón Home
     const btnHome = document.getElementById('btnHome');
     if(btnHome) btnHome.addEventListener('click', goBackToDashboard);
+
+    // NUEVO: Evento botón Ver Todo
+    const btnAll = document.getElementById('btnShowAll');
+    if(btnAll) btnAll.addEventListener('click', showAllInventory);
 
     // Evento botón Editar en Modal Detalle
     const btnEdit = document.getElementById('btnEditGame');
@@ -31,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- RENDERIZADO DEL DASHBOARD ---
 function renderDashboard() {
-    // Actualizamos estado
     window.appState = { view: 'dashboard', data: null };
 
     const container = document.getElementById('locationsContainer');
@@ -88,7 +91,6 @@ async function performSearch(query) {
         return;
     }
 
-    // Actualizamos estado
     window.appState = { view: 'search', data: query };
 
     document.getElementById('locationsSection').classList.add('hidden');
@@ -128,9 +130,60 @@ async function performSearch(query) {
     }
 }
 
+// --- VER TODO EL INVENTARIO ---
+async function showAllInventory() {
+    window.appState = { view: 'all', data: null };
+
+    document.getElementById('locationsSection').classList.add('hidden');
+    document.getElementById('gamesSection').classList.remove('hidden');
+    document.getElementById('searchInput').value = ''; 
+    document.getElementById('currentLocationTitle').innerText = "Inventario Completo";
+    
+    const contentDiv = document.getElementById('gamesContent');
+    contentDiv.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">Cargando toda la colección...</p>';
+
+    try {
+        const snapshot = await db.collection("inventario").orderBy("nombre").get();
+        contentDiv.innerHTML = '';
+
+        if(snapshot.empty) {
+            contentDiv.innerHTML = '<p style="text-align:center;color:#666">Aún no has añadido nada.</p>';
+            return;
+        }
+
+        const videojuegos = [];
+        const programas = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const card = createGameCard(data, doc.id);
+            if(data.tipo === 'programa') programas.push(card);
+            else videojuegos.push(card);
+        });
+
+        if(videojuegos.length > 0) {
+            const h = document.createElement('h3'); h.className='category-header'; 
+            h.innerText=`Videojuegos (${videojuegos.length})`;
+            contentDiv.appendChild(h);
+            const g = document.createElement('div'); g.className='games-grid';
+            videojuegos.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
+        }
+
+        if(programas.length > 0) {
+            const h = document.createElement('h3'); h.className='category-header'; 
+            h.innerText=`Programas (${programas.length})`;
+            contentDiv.appendChild(h);
+            const g = document.createElement('div'); g.className='games-grid';
+            programas.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
+        }
+
+    } catch (error) {
+        console.error(error);
+        contentDiv.innerHTML = `<p style="color:red">Error al cargar: ${error.message}</p>`;
+    }
+}
+
 // --- ABRIR UBICACIÓN ---
 async function openLocation(loc) {
-    // Actualizamos estado
     window.appState = { view: 'location', data: loc };
 
     document.getElementById('locationsSection').classList.add('hidden');
@@ -290,38 +343,34 @@ function setupModalEvents() {
 }
 
 // --- FUNCIÓN INTELIGENTE PARA REFRESCAR LA VISTA ACTUAL ---
-// Esta función se llamará desde form.js
 window.refreshCurrentView = function() {
-    updateDiskSpace(); // Siempre actualizamos espacio
+    updateDiskSpace(); 
 
     const state = window.appState;
     if (state.view === 'location' && state.data) {
-        // Estamos viendo una ubicación: recargamos esa ubicación
         openLocation(state.data);
     } else if (state.view === 'search' && state.data) {
-        // Estamos buscando: repetimos la búsqueda
         performSearch(state.data);
+    } else if (state.view === 'all') {
+        showAllInventory();
     } else {
-        // Estamos en el dashboard o inicio
         renderDashboard();
     }
 };
 
-// --- PARTE B: FUNCIÓN BOTÓN VOLVER ARRIBA ---
+// --- BOTÓN VOLVER ARRIBA ---
 function setupScrollTop() {
     const btn = document.getElementById('btnScrollTop');
     if(!btn) return;
 
-    // 1. Mostrar/Ocultar al hacer scroll
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) { // Si bajamos más de 300px
+        if (window.scrollY > 300) {
             btn.classList.add('visible');
         } else {
             btn.classList.remove('visible');
         }
     });
 
-    // 2. Acción al hacer clic (Scroll suave)
     btn.addEventListener('click', () => {
         window.scrollTo({
             top: 0,
