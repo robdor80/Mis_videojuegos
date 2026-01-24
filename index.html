@@ -2,18 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Videojuegos - Gestión Personal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Mis Videojuegos</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <header class="main-header">
-        <div class="container">
-            <h1>Mis Videojuegos</h1>
-            <button id="btnAddGame" class="btn-primary">
-                <i class="fa-solid fa-plus"></i> Añadir Nuevo
+        <div class="header-content">
+            <div class="logo">
+                <i class="fa-solid fa-gamepad"></i> Mis Videojuegos
+            </div>
+            <button id="btnAddGame" class="btn btn-accent">
+                <i class="fa-solid fa-plus"></i> <span class="btn-text">Añadir</span>
             </button>
         </div>
     </header>
@@ -21,21 +22,21 @@
     <main class="container">
         
         <section id="locationsSection">
-            <h2>Ubicaciones de Almacenamiento</h2>
-            <div id="locationsContainer" class="locations-grid">
-                <p class="loading-text">Cargando ubicaciones y calculando espacio...</p>
+            <h2 class="section-title">Mis Unidades</h2>
+            <div id="locationsContainer" class="grid-locations">
+                <p class="loading-msg">Cargando unidades...</p>
             </div>
         </section>
 
         <section id="gamesSection" class="hidden">
-            <div class="section-header">
-                <button id="btnBackToLocations" class="btn-secondary">
-                    <i class="fa-solid fa-arrow-left"></i> Volver
+            <div class="sub-header">
+                <button id="btnBackToLocations" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Atrás
                 </button>
                 <h2 id="currentLocationTitle">Listado</h2>
             </div>
             
-            <div id="gamesContainer" class="games-grid">
+            <div id="gamesContainer" class="grid-games">
                 </div>
         </section>
 
@@ -44,83 +45,84 @@
     <div id="gameModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <div id="modalBody">
-                </div>
+            <div id="modalBody"></div>
         </div>
     </div>
 
     <div id="formModal" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-content modal-form">
             <span class="close-form">&times;</span>
-            <h2>Gestión de Videojuego/Programa</h2>
-            
+            <h2>Gestión de Título</h2>
             <form id="gameForm">
                 <input type="hidden" id="docId">
-
-                <div class="form-group">
-                    <label>Nombre:</label>
-                    <input type="text" id="nombre" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Tipo:</label>
-                    <select id="tipo" required>
-                        <option value="videojuego">Videojuego</option>
-                        <option value="programa">Programa</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Ubicación:</label>
-                    <select id="ubicacion" required>
-                        <option value="steam">Steam</option>
-                        <option value="ubisoft">Ubisoft</option>
-                        <option value="hdd1">HDD Externo 1</option>
-                        <option value="hdd2">HDD Externo 2</option>
-                        <option value="m2">SSD M.2</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Tamaño Base (GB):</label>
-                    <input type="number" id="tamano" step="0.01" required>
-                </div>
-
-                <div id="fieldUpdates" class="conditional-group">
-                    <label><input type="checkbox" id="tieneUpdatesLocales"> ¿Updates Locales?</label>
-                    <input type="number" id="tamanoUpdates" placeholder="GB Updates" class="hidden">
-                </div>
-
-                <div id="fieldDlss" class="conditional-group">
-                    <label><input type="checkbox" id="dlss"> ¿DLSS?</label>
-                    <input type="text" id="dlssVersion" placeholder="Versión (ej: 2.5)" class="hidden">
-                </div>
-
-                <div id="fieldMods" class="conditional-group">
-                    <label><input type="checkbox" id="tieneMods"> ¿Tiene Mods?</label>
-                    <div id="modsContainer" class="hidden">
-                        <input type="number" id="tamanoMods" placeholder="GB Mods">
-                        <textarea id="modsDescripcion" placeholder="Descripción de mods"></textarea>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="nombre" required placeholder="Ej: Cyberpunk 2077">
                     </div>
                 </div>
 
-                <div id="fieldSavegame" class="conditional-group">
-                    <label><input type="checkbox" id="tieneSavegame"> ¿Savegame Local?</label>
-                    <textarea id="savegameNotas" placeholder="Notas del savegame" class="hidden"></textarea>
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="tipo" required>
+                            <option value="videojuego">Videojuego</option>
+                            <option value="programa">Programa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación</label>
+                        <select id="ubicacion" required>
+                            <option value="steam">Steam</option>
+                            <option value="ubisoft">Ubisoft</option>
+                            <option value="hdd1">HDD 1</option>
+                            <option value="hdd2">HDD 2</option>
+                            <option value="m2">M.2 SSD</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Descripción:</label>
-                    <textarea id="descripcion"></textarea>
+                    <label>Tamaño (GB)</label>
+                    <input type="number" id="tamano" step="0.01" required>
+                </div>
+
+                <div class="checks-container">
+                    <label class="check-box">
+                        <input type="checkbox" id="tieneUpdatesLocales"> Updates
+                    </label>
+                    <label class="check-box">
+                        <input type="checkbox" id="dlss"> DLSS
+                    </label>
+                    <label class="check-box">
+                        <input type="checkbox" id="tieneMods"> Mods
+                    </label>
+                    <label class="check-box">
+                        <input type="checkbox" id="tieneSavegame"> Savegame
+                    </label>
+                </div>
+
+                <div id="conditionalFields">
+                    <input type="number" id="tamanoUpdates" placeholder="Tamaño Updates (GB)" class="hidden form-input-cond">
+                    <input type="text" id="dlssVersion" placeholder="Versión DLSS" class="hidden form-input-cond">
+                    
+                    <div id="modsContainer" class="hidden form-input-cond">
+                        <input type="number" id="tamanoMods" placeholder="Tamaño Mods (GB)">
+                        <textarea id="modsDescripcion" placeholder="Descripción Mods"></textarea>
+                    </div>
+
+                    <textarea id="savegameNotas" placeholder="Notas Savegame" class="hidden form-input-cond"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Carátula:</label>
+                    <label>Imagen</label>
                     <input type="file" id="imageFile" accept="image/*">
-                    <input type="hidden" id="imagenUrl"> <div id="uploadStatus"></div>
+                    <input type="hidden" id="imagenUrl">
+                    <div id="uploadStatus"></div>
                 </div>
 
-                <button type="submit" class="btn-primary">Guardar</button>
+                <button type="submit" class="btn btn-full btn-accent">Guardar Datos</button>
             </form>
         </div>
     </div>
@@ -128,11 +130,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-    <script src="js/firebase.js" defer></script>
-    <script src="js/data.js" defer></script>
-    <script src="js/ui.js" defer></script>
-    <script src="js/form.js" defer></script>
-
+    <script src="js/firebase.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/form.js"></script>
 </body>
 </html>

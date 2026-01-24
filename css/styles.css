@@ -1,0 +1,309 @@
+/* --- 1. VARIABLES & RESET --- */
+:root {
+    --bg-main: #121212;       /* Fondo muy oscuro */
+    --bg-card: #1e1e1e;       /* Fondo de tarjetas */
+    --bg-modal: #2d2d2d;      /* Fondo de modales */
+    --text-main: #e0e0e0;     /* Texto blanco roto */
+    --text-muted: #a0a0a0;    /* Texto secundario */
+    --accent: #bb86fc;        /* Púrpura (estilo 'gaming' moderno) */
+    --accent-hover: #9965f4;
+    --danger: #cf6679;        /* Rojo suave para errores/borrar */
+    --success: #03dac6;       /* Verde azulado para espacio libre */
+    
+    --spacing: 16px;
+    --radius: 12px;
+    --shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding-bottom: 40px; /* Espacio para scroll en móvil */
+}
+
+/* --- 2. LAYOUT & HEADER (MOBILE FIRST) --- */
+.container {
+    padding: var(--spacing);
+    width: 100%;
+    margin: 0 auto;
+}
+
+.main-header {
+    background-color: var(--bg-card);
+    padding: var(--spacing);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid #333;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px; /* Límite para PC */
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.sub-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: var(--spacing);
+}
+
+/* --- 3. BOTONES --- */
+.btn {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    color: #000;
+}
+
+.btn-accent:hover { background-color: var(--accent-hover); }
+
+.btn-secondary {
+    background-color: #333;
+    color: var(--text-main);
+}
+
+.btn-full { width: 100%; justify-content: center; margin-top: 1rem; }
+
+/* --- 4. DASHBOARD (UBICACIONES) --- */
+/* Mobile: 1 columna por defecto */
+.grid-locations {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: var(--spacing);
+    margin-top: var(--spacing);
+}
+
+.card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.card:active { transform: scale(0.98); } /* Feedback táctil */
+
+.location-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-info {
+    padding: var(--spacing);
+}
+
+.card-info h3 { margin-bottom: 8px; font-size: 1.1rem; }
+
+.capacity-info {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #333;
+}
+
+.badge-free { color: var(--success); border: 1px solid var(--success); }
+
+/* --- 5. GRID JUEGOS --- */
+.grid-games {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Mobile: 2 col si caben */
+    gap: 12px;
+}
+
+/* Tarjeta de juego más compacta para el grid */
+.game-card {
+    position: relative;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.game-card img {
+    width: 100%;
+    aspect-ratio: 2/3; /* Formato póster típico */
+    object-fit: cover;
+}
+
+.game-title-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.8);
+    padding: 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- 6. FORMULARIO & MODALES --- */
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.85);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centrado vertical */
+    padding: var(--spacing);
+}
+
+.modal-content {
+    background-color: var(--bg-modal);
+    padding: 20px;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto; /* Scroll si el form es largo */
+    position: relative;
+    border: 1px solid #444;
+}
+
+.close-modal, .close-form {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+/* Estilos Inputs */
+.form-group { margin-bottom: 12px; }
+label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
+input[type="text"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem; /* Importante 16px min para evitar zoom en iOS */
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.checks-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.form-input-cond {
+    margin-top: 8px;
+    border-left: 3px solid var(--accent) !important;
+}
+
+/* Utility Classes */
+.hidden { display: none !important; }
+.loading-msg { text-align: center; padding: 20px; color: var(--text-muted); }
+
+/* =========================================
+   MEDIA QUERIES (TABLET & DESKTOP)
+   ========================================= */
+
+/* Tablet Vertical (aprox 600px a 1023px) */
+@media (min-width: 600px) {
+    .grid-locations {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    }
+    
+    .grid-games {
+        grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+    }
+}
+
+/* Tablet Horizontal y PC (> 1024px) */
+@media (min-width: 1024px) {
+    /* Limitamos el ancho para que no se estire infinito en pantallas ultra-wide */
+    .container {
+        max-width: 1200px; 
+    }
+
+    /* Ubicaciones: 3 o 4 columnas o flex wrap elegante */
+    .grid-locations {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+    }
+
+    /* Juegos: 5 columnas para aprovechar espacio */
+    .grid-games {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+    }
+
+    /* Tarjetas con efecto hover solo en PC (no tiene sentido en móvil) */
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+    }
+
+    /* Formulario: 2 columnas dentro del modal si es ancho */
+    .modal-form {
+        max-width: 700px; /* Modal más ancho en PC */
+    }
+
+    .form-row.two-col {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .form-row.two-col .form-group {
+        flex: 1;
+    }
+    
+    /* Scrollbar personalizada (estilo Webkit/Chrome) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+}
