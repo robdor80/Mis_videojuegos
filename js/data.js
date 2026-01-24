@@ -24,7 +24,7 @@ const locationsData = [
         id: 'hdd1',
         nombre: 'Disco Kesu (Externo)',
         tipo: 'disk',
-        capacidad: 1000, // 1000 GB
+        capacidad: 700, // 700 GB
         img: 'assets/locations/kesu.png'
     },
     {

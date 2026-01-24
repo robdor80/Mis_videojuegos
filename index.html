@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <meta name="theme-color" content="#bb86fc">
     <meta name="description" content="Gestor de inventario de videojuegos y programas">
     <link rel="manifest" href="manifest.json">
@@ -14,7 +13,6 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
 
     <header class="hero-header">
@@ -22,12 +20,11 @@
             <div class="nav-icon" id="btnHome" title="Volver al Inicio">
                 <i class="fa-solid fa-gamepad"></i>
             </div>
-
+            
             <div class="header-actions">
                 <button id="btnAddGame" class="nav-icon btn-add" title="Añadir Nuevo">
                     <i class="fa-solid fa-plus"></i>
                 </button>
-
                 <button id="btnShowAll" class="nav-icon btn-show-all" title="Ver Todo el Inventario">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
@@ -43,15 +40,14 @@
                 <button id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
         </section>
-
+        
         <section id="locationsSection">
             <div id="locationsContainer" class="locations-grid"></div>
         </section>
 
         <section id="gamesSection" class="hidden">
             <div class="section-header">
-                <h2 id="currentLocationTitle"
-                    style="font-size: 1.8rem; border-left: 4px solid #bb86fc; padding-left: 15px;">Listado</h2>
+                <h2 id="currentLocationTitle" style="font-size: 1.8rem; border-left: 4px solid #bb86fc; padding-left: 15px;">Listado</h2>
             </div>
             <div id="gamesContent"></div>
         </section>
@@ -74,7 +70,7 @@
                         <select id="tipo" required>
                             <option value="videojuego">Videojuego</option>
                             <option value="programa">Programa</option>
-                        </select>
+                            <option value="otros">Otros</option> </select>
                     </div>
                     <div class="form-group">
                         <label>Ubicación *</label>
@@ -117,8 +113,7 @@
                     <div class="form-group-check">
                         <label><input type="checkbox" id="tieneMods"> Mods</label>
                         <div id="subFieldMods" class="sub-field hidden">
-                            <input type="number" id="tamanoMods" placeholder="GB"><textarea
-                                id="modsDescripcion"></textarea>
+                            <input type="number" id="tamanoMods" placeholder="GB"><textarea id="modsDescripcion"></textarea>
                         </div>
                     </div>
                 </div>
@@ -148,13 +143,11 @@
                         <p><strong>Tamaño Total:</strong> <span id="detailSize"></span> GB</p>
                     </div>
                     <div class="detail-desc-box">
-                        <h4>Notas:</h4>
-                        <p id="detailDesc"></p>
+                        <h4>Notas:</h4><p id="detailDesc"></p>
                     </div>
                     <div id="detailExtra" class="detail-extra-box hidden"></div>
                     <div class="detail-actions">
-                        <button id="btnEditGame" class="btn-primary"><i class="fa-solid fa-pen-to-square"></i>
-                            Editar</button>
+                        <button id="btnEditGame" class="btn-primary"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                     </div>
                 </div>
             </div>
@@ -165,17 +158,13 @@
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
-    <script src="..."></script>
-</body>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase.js"></script>
-<script src="js/data.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/form.js"></script>
-<script src="js/pwa.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/form.js"></script>
+    <script src="js/pwa.js"></script>
 
 </body>
-
 </html>

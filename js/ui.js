@@ -1,9 +1,9 @@
 // js/ui.js
 
-// ESTADO GLOBAL DE LA APP (Para saber dónde estamos)
+// ESTADO GLOBAL DE LA APP
 window.appState = {
-    view: 'dashboard', // dashboard | location | search | all
-    data: null         // objeto ubicación o string de búsqueda
+    view: 'dashboard', 
+    data: null         
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,15 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSearch();
     setupScrollTop();
 
-    // Evento botón Home
+    // Eventos de botones
     const btnHome = document.getElementById('btnHome');
     if(btnHome) btnHome.addEventListener('click', goBackToDashboard);
 
-    // NUEVO: Evento botón Ver Todo
     const btnAll = document.getElementById('btnShowAll');
     if(btnAll) btnAll.addEventListener('click', showAllInventory);
 
-    // Evento botón Editar en Modal Detalle
     const btnEdit = document.getElementById('btnEditGame');
     if(btnEdit) {
         btnEdit.addEventListener('click', () => {
@@ -151,15 +149,21 @@ async function showAllInventory() {
             return;
         }
 
+        // --- CLASIFICACIÓN EN 3 GRUPOS ---
         const videojuegos = [];
         const programas = [];
+        const otros = [];
+
         snapshot.forEach(doc => {
             const data = doc.data();
             const card = createGameCard(data, doc.id);
+            
             if(data.tipo === 'programa') programas.push(card);
-            else videojuegos.push(card);
+            else if(data.tipo === 'otros') otros.push(card); // Nueva categoría
+            else videojuegos.push(card); // Por defecto videojuego
         });
 
+        // --- RENDERIZADO POR SECCIONES ---
         if(videojuegos.length > 0) {
             const h = document.createElement('h3'); h.className='category-header'; 
             h.innerText=`Videojuegos (${videojuegos.length})`;
@@ -174,6 +178,14 @@ async function showAllInventory() {
             contentDiv.appendChild(h);
             const g = document.createElement('div'); g.className='games-grid';
             programas.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
+        }
+
+        if(otros.length > 0) {
+            const h = document.createElement('h3'); h.className='category-header'; 
+            h.innerText=`Otros (${otros.length})`;
+            contentDiv.appendChild(h);
+            const g = document.createElement('div'); g.className='games-grid';
+            otros.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
         }
 
     } catch (error) {
@@ -203,26 +215,40 @@ async function openLocation(loc) {
             return;
         }
 
+        // --- CLASIFICACIÓN EN 3 GRUPOS ---
         const videojuegos = [];
         const programas = [];
+        const otros = [];
+
         snapshot.forEach(doc => {
             const data = doc.data();
             const card = createGameCard(data, doc.id);
+            
             if(data.tipo === 'programa') programas.push(card);
+            else if(data.tipo === 'otros') otros.push(card); // Nueva categoría
             else videojuegos.push(card);
         });
 
+        // --- RENDERIZADO POR SECCIONES ---
         if(videojuegos.length > 0) {
             const h = document.createElement('h3'); h.className='category-header'; h.innerText='Videojuegos';
             contentDiv.appendChild(h);
             const g = document.createElement('div'); g.className='games-grid';
             videojuegos.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
         }
+        
         if(programas.length > 0) {
             const h = document.createElement('h3'); h.className='category-header'; h.innerText='Programas / Software';
             contentDiv.appendChild(h);
             const g = document.createElement('div'); g.className='games-grid';
             programas.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
+        }
+
+        if(otros.length > 0) {
+            const h = document.createElement('h3'); h.className='category-header'; h.innerText='Otros';
+            contentDiv.appendChild(h);
+            const g = document.createElement('div'); g.className='games-grid';
+            otros.forEach(c => g.appendChild(c)); contentDiv.appendChild(g);
         }
 
     } catch (error) {
