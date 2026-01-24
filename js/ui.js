@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDiskSpace();
     setupModalEvents();
     setupSearch();
+    setupScrollTop(); // <--- PARTE A: Iniciamos el botón volver arriba
 
     // Evento botón Home
     const btnHome = document.getElementById('btnHome');
@@ -305,3 +306,26 @@ window.refreshCurrentView = function() {
         renderDashboard();
     }
 };
+
+// --- PARTE B: FUNCIÓN BOTÓN VOLVER ARRIBA ---
+function setupScrollTop() {
+    const btn = document.getElementById('btnScrollTop');
+    if(!btn) return;
+
+    // 1. Mostrar/Ocultar al hacer scroll
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) { // Si bajamos más de 300px
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    });
+
+    // 2. Acción al hacer clic (Scroll suave)
+    btn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}

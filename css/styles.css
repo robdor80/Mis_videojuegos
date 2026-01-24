@@ -247,3 +247,44 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
 }
 
 .hidden { display: none !important; }
+
+/* =========================================
+   BOTÓN VOLVER ARRIBA
+   ========================================= */
+.btn-scroll-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Redondo */
+    background-color: var(--accent);
+    color: black;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    z-index: 90; /* Por encima del contenido, pero debajo de modales */
+    
+    /* Estado inicial: oculto y un poco más abajo */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* Clase para mostrarlo (se añade con JS) */
+.btn-scroll-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Efecto Hover: Similar al botón +, pero en vez de girar, "salta" hacia arriba */
+.btn-scroll-top:hover {
+    background-color: white; /* Se pone blanco como el botón + */
+    transform: scale(1.1) translateY(-5px); 
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.3);
+}
