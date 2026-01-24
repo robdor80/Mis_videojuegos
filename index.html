@@ -11,17 +11,18 @@
 
     <header class="main-header">
         <div class="logo-container">
-            <div class="logo" onclick="window.location.reload()"> <i class="fa-solid fa-hard-drive"></i> <span class="logo-text">Mis Videojuegos</span>
+            <div class="logo" onclick="window.location.reload()">
+                <i class="fa-solid fa-gamepad"></i> <span class="logo-text">Mis Videojuegos</span>
             </div>
         </div>
 
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Buscar juego o programa...">
+            <input type="text" id="searchInput" placeholder="Buscar título...">
             <button id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
 
         <div class="actions-container">
-            <button id="btnAddGame" class="btn-icon">
+            <button id="btnAddGame" class="btn-add-floating" title="Añadir juego">
                 <i class="fa-solid fa-plus"></i>
             </button>
         </div>
@@ -30,9 +31,7 @@
     <main class="container">
         
         <section id="locationsSection">
-            <h1 class="page-title">Mis Unidades</h1>
-            <div id="locationsContainer" class="locations-grid">
-                </div>
+            <h1 class="page-title">Mi Colección</h1> <div id="locationsContainer" class="locations-grid"></div>
         </section>
 
         <section id="gamesSection" class="hidden">
@@ -42,7 +41,6 @@
                 </button>
                 <h2 id="currentLocationTitle">Listado</h2>
             </div>
-
             <div id="gamesContent"></div>
         </section>
 
@@ -132,31 +130,21 @@
     <div id="detailModal" class="modal">
         <div class="modal-content modal-scrollable">
             <span class="close-modal close-detail-modal">&times;</span>
-            
             <div class="detail-layout">
-                <div class="detail-image">
-                    <img id="detailImg" src="" alt="Carátula">
-                </div>
+                <div class="detail-image"><img id="detailImg" src="" alt="Carátula"></div>
                 <div class="detail-info">
                     <h2 id="detailTitle">Título</h2>
                     <div class="detail-badges" id="detailBadges"></div>
-                    
                     <div class="detail-meta">
                         <p><strong>Ubicación:</strong> <span id="detailLoc"></span></p>
                         <p><strong>Tamaño Total:</strong> <span id="detailSize"></span> GB</p>
                     </div>
-
                     <div class="detail-desc-box">
-                        <h4>Notas / Descripción:</h4>
-                        <p id="detailDesc">Sin descripción.</p>
+                        <h4>Notas:</h4><p id="detailDesc"></p>
                     </div>
-
                     <div id="detailExtra" class="detail-extra-box hidden"></div>
-
                     <div class="detail-actions">
-                        <button id="btnEditGame" class="btn-primary">
-                            <i class="fa-solid fa-pen-to-square"></i> Editar
-                        </button>
+                        <button id="btnEditGame" class="btn-primary"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
                     </div>
                 </div>
             </div>
