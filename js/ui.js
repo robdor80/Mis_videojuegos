@@ -14,6 +14,7 @@ function renderDashboard() {
     
     container.innerHTML = '';
 
+    // locationsData viene de js/data.js
     locationsData.forEach(loc => {
         let espacioHtml = '';
         if(loc.tipo === 'disk') {
@@ -49,21 +50,21 @@ function setupModalEvents() {
     const btnAdd = document.getElementById('btnAddGame');
     const btnClose = document.querySelector('.close-modal');
 
-    // Abrir
+    // Abrir modal
     if (btnAdd) {
         btnAdd.addEventListener('click', () => {
             modal.classList.add('active');
         });
     }
 
-    // Cerrar con X
+    // Cerrar modal con la X
     if (btnClose) {
         btnClose.addEventListener('click', () => {
             modal.classList.remove('active');
         });
     }
 
-    // Cerrar click fuera
+    // Cerrar modal clicando fuera
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('active');
