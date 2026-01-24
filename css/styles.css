@@ -134,7 +134,7 @@ body {
 .search-wrapper button:hover { color: var(--accent); }
 
 /* =========================================
-   RESTO DE ESTILOS (IGUAL QUE ANTES)
+   DASHBOARD (UBICACIONES)
    ========================================= */
 .locations-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 @media (min-width: 600px) { .locations-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -151,6 +151,9 @@ body {
 .space-bar-container { margin-top: 10px; background: #333; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
 .space-bar-fill { height: 100%; background-color: var(--accent); width: 0%; transition: width 0.5s ease; }
 
+/* =========================================
+   LISTADO Y SEPARADORES
+   ========================================= */
 .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
 .btn-secondary { background: #333; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .category-header { margin: 30px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid var(--accent); color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
@@ -169,7 +172,9 @@ body {
 .badge-dlss { background: var(--badge-dlss); color: black; padding: 2px 5px; border-radius: 3px; font-weight: 800; font-size: 0.65rem; }
 .badge-mods { background: var(--accent); color: black; padding: 2px 5px; border-radius: 3px; font-weight: 800; font-size: 0.65rem; }
 
-/* MODALES */
+/* =========================================
+   MODALES
+   ========================================= */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
 .modal.active { display: flex; animation: fadeInModal 0.2s ease-out; }
 @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
@@ -184,6 +189,9 @@ body {
 .detail-desc-box { background: #252525; padding: 15px; border-radius: 6px; border-left: 3px solid #666; font-size: 0.95rem; line-height: 1.5; color: #ddd; }
 .detail-extra-box { margin-top: 10px; font-size: 0.9rem; color: #bbb; font-style: italic; background: #1a1a1a; padding: 10px; border-radius: 6px; }
 
+/* =========================================
+   FORMULARIOS Y CHECKBOXES (CORREGIDO)
+   ========================================= */
 .form-group { margin-bottom: 15px; }
 .form-row { display: flex; gap: 15px; } .form-row .form-group { flex: 1; }
 label { display: block; margin-bottom: 5px; color: #bbb; font-size: 0.9rem; }
@@ -191,5 +199,51 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
 .btn-primary { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: black; font-size: 1rem; transition: filter 0.2s; }
 .btn-primary:hover { filter: brightness(1.2); }
 .conditional-section { background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--accent); }
-.sub-field { margin-top: 10px; margin-left: 20px; padding: 12px; background: #1a1a1a; border-radius: 6px; border: 1px solid #333; }
+
+/* MEJORA CHECKBOXES: ALINEACIÓN Y TAMAÑO */
+.form-group-check {
+    margin-bottom: 10px;
+}
+
+.form-group-check label {
+    display: flex; 
+    justify-content: space-between; /* Texto izq, casilla derecha */
+    align-items: center;            /* Alineación vertical perfecta */
+    background-color: #1a1a1a;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    cursor: pointer;
+    color: #e0e0e0;
+    font-size: 1rem;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.form-group-check label:hover {
+    border-color: var(--accent);
+    background-color: #222;
+}
+
+/* El cuadradito */
+.form-group-check input[type="checkbox"] {
+    width: 24px;   /* Más grande */
+    height: 24px;  /* Más grande */
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Sub-campos (lo que se despliega) */
+.sub-field { 
+    margin-top: 8px; 
+    margin-left: 0; 
+    padding: 15px; 
+    background: #1a1a1a; 
+    border-radius: 6px; 
+    border: 1px solid #333; 
+    border-left: 3px solid var(--accent);
+    animation: fadeIn 0.3s ease;
+}
+
 .hidden { display: none !important; }
