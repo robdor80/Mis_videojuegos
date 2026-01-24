@@ -11,7 +11,7 @@
 
     <header class="hero-header">
         <div class="header-top-bar">
-            <div class="nav-icon" onclick="window.location.reload()" title="Inicio">
+            <div class="nav-icon" id="btnHome" title="Volver al Inicio">
                 <i class="fa-solid fa-gamepad"></i>
             </div>
             
@@ -36,10 +36,7 @@
 
         <section id="gamesSection" class="hidden">
             <div class="section-header">
-                <button id="btnBack" class="btn-secondary">
-                    <i class="fa-solid fa-arrow-left"></i> Volver
-                </button>
-                <h2 id="currentLocationTitle">Listado</h2>
+                <h2 id="currentLocationTitle" style="font-size: 1.8rem; border-left: 4px solid #bb86fc; padding-left: 15px;">Listado</h2>
             </div>
             <div id="gamesContent"></div>
         </section>
@@ -152,6 +149,5 @@
     <script src="js/data.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/form.js"></script>
-
 </body>
 </html>

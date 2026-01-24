@@ -6,9 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupModalEvents();
     setupSearch();
 
-    // Botón volver
-    const btnBack = document.getElementById('btnBack');
-    if(btnBack) btnBack.addEventListener('click', goBackToDashboard);
+    // NUEVO: El botón "Home" del header ahora usa la navegación rápida
+    const btnHome = document.getElementById('btnHome');
+    if(btnHome) {
+        btnHome.addEventListener('click', goBackToDashboard);
+    }
+
+    // (El listener de btnBack lo he borrado porque el botón ya no existe)
 
     // Botón Editar dentro del modal de detalle
     const btnEdit = document.getElementById('btnEditGame');
@@ -54,7 +58,7 @@ function renderDashboard() {
     });
 }
 
-// --- LÓGICA DE BÚSQUEDA (MEJORADA) ---
+// --- LÓGICA DE BÚSQUEDA ---
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const btn = document.getElementById('btnSearch');
@@ -67,17 +71,12 @@ function setupSearch() {
     });
 }
 
-// Función auxiliar para "limpiar" texto (quita tildes y normaliza espacios)
 function cleanText(text) {
     if (!text) return "";
-    return text.toString()
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar tildes
-        .trim();
+    return text.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
 
 async function performSearch(query) {
-    // Limpiamos lo que escribe el usuario
     const term = cleanText(query);
     
     if (term === '') {
@@ -85,7 +84,7 @@ async function performSearch(query) {
         return;
     }
 
-    // 1. Preparar la vista
+    // Vista de resultados
     document.getElementById('locationsSection').classList.add('hidden');
     document.getElementById('gamesSection').classList.remove('hidden');
     
@@ -95,9 +94,6 @@ async function performSearch(query) {
     contentDiv.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">Buscando...</p>';
 
     try {
-        console.log("Buscando:", term); // Debug en consola
-
-        // 2. Traer inventario
         const snapshot = await db.collection("inventario").get();
         
         if(snapshot.empty) {
@@ -108,12 +104,8 @@ async function performSearch(query) {
         const resultados = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            
-            // Protección: Si el juego no tiene nombre, lo ignoramos para que no falle
             if (data.nombre) {
                 const nombreJuego = cleanText(data.nombre);
-                
-                // Comprobamos si incluye el término
                 if (nombreJuego.includes(term)) {
                     resultados.push({ id: doc.id, data: data });
                 }
@@ -127,7 +119,6 @@ async function performSearch(query) {
             return;
         }
 
-        // 3. Renderizar Resultados
         const grid = document.createElement('div');
         grid.className = 'games-grid';
         
@@ -280,7 +271,7 @@ function openDetailModal(docId, data) {
     document.getElementById('detailModal').classList.add('active');
 }
 
-// --- NAVEGACIÓN ---
+// --- NAVEGACIÓN (VOLVER AL DASHBOARD) ---
 function goBackToDashboard() {
     document.getElementById('gamesSection').classList.add('hidden');
     document.getElementById('locationsSection').classList.remove('hidden');
@@ -295,12 +286,9 @@ function setupModalEvents() {
     const closeForm = document.querySelector('.close-form-modal');
 
     if(btnAdd) btnAdd.addEventListener('click', () => {
-        // RESETEAR FORMULARIO
         document.getElementById('gameForm').reset();
         document.getElementById('docId').value = "";
         document.getElementById('formTitle').innerText = "Añadir Nuevo Título";
-        
-        // Resetear visualmente condicionales
         document.getElementById('ubicacion').dispatchEvent(new Event('change'));
         document.getElementById('tipo').dispatchEvent(new Event('change'));
         document.querySelectorAll('.sub-field').forEach(el => el.classList.add('hidden'));
