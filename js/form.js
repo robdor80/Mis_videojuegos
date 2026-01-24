@@ -1,183 +1,240 @@
 // js/form.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Iniciar lógica visual (mostrar/ocultar campos)
     initFormLogic();
-    
-    // 2. Iniciar lógica de guardado
     setupFormSubmit();
 });
 
-// --- PARTE 1: LÓGICA VISUAL (Ya la tenías) ---
+// --- LÓGICA VISUAL (Mostrar/Ocultar campos) ---
 function initFormLogic() {
     const ubicacionSelect = document.getElementById('ubicacion');
     const tipoSelect = document.getElementById('tipo');
 
-    // Checkboxes principales
-    const checkUpdates = document.getElementById('tieneUpdatesLocales');
-    const checkSavegame = document.getElementById('tieneSavegame');
-    const checkDlss = document.getElementById('dlss');
-    const checkMods = document.getElementById('tieneMods');
-
-    // EVENTO: CAMBIO DE UBICACIÓN
     if (ubicacionSelect) {
         ubicacionSelect.addEventListener('change', () => {
             const val = ubicacionSelect.value;
-            const locationFields = document.getElementById('locationFields');
+            const fields = document.getElementById('locationFields');
             const esFisico = ['hdd1', 'hdd2', 'm2'].includes(val);
-
-            if (esFisico) {
-                locationFields.classList.remove('hidden');
-            } else {
-                locationFields.classList.add('hidden');
-                // Limpiar checkboxes visualmente
-                if(checkUpdates) checkUpdates.checked = false;
-                if(checkSavegame) checkSavegame.checked = false;
-                toggleSubField('subFieldUpdates', false);
-                toggleSubField('subFieldSavegame', false);
+            
+            if (esFisico) fields.classList.remove('hidden');
+            else {
+                fields.classList.add('hidden');
+                // No limpiamos valores por si es edición y cambian de disco
             }
         });
     }
 
-    // EVENTO: CAMBIO DE TIPO
     if (tipoSelect) {
         tipoSelect.addEventListener('change', () => {
             const val = tipoSelect.value;
-            const typeFields = document.getElementById('typeFields');
-
-            if (val === 'videojuego') {
-                typeFields.classList.remove('hidden');
-            } else {
-                typeFields.classList.add('hidden');
-                // Limpiar checkboxes visualmente
-                if(checkDlss) checkDlss.checked = false;
-                if(checkMods) checkMods.checked = false;
-                toggleSubField('subFieldDlss', false);
-                toggleSubField('subFieldMods', false);
-            }
+            const fields = document.getElementById('typeFields');
+            
+            if (val === 'videojuego') fields.classList.remove('hidden');
+            else fields.classList.add('hidden');
         });
     }
 
-    // EVENTOS: CHECKBOXES
-    setupCheckboxToggle(checkUpdates, 'subFieldUpdates');
-    setupCheckboxToggle(checkSavegame, 'subFieldSavegame');
-    setupCheckboxToggle(checkDlss, 'subFieldDlss');
-    setupCheckboxToggle(checkMods, 'subFieldMods');
+    // Checkboxes
+    ['tieneUpdatesLocales', 'tieneSavegame', 'dlss', 'tieneMods'].forEach(id => {
+        const check = document.getElementById(id);
+        const subId = 'subField' + id.charAt(0).toUpperCase() + id.slice(1).replace('tiene','').replace('Locales',''); 
+        // mapeo manual rápido:
+        // tieneUpdatesLocales -> subFieldUpdates
+        // tieneSavegame -> subFieldSavegame
+        // dlss -> subFieldDlss
+        // tieneMods -> subFieldMods
+        
+        // Corrección de IDs manual para evitar líos de strings
+        const map = {
+            'tieneUpdatesLocales': 'subFieldUpdates',
+            'tieneSavegame': 'subFieldSavegame',
+            'dlss': 'subFieldDlss',
+            'tieneMods': 'subFieldMods'
+        };
 
-    // ESTADO INICIAL
-    if (ubicacionSelect) ubicacionSelect.dispatchEvent(new Event('change'));
-    if (tipoSelect) tipoSelect.dispatchEvent(new Event('change'));
-}
-
-function setupCheckboxToggle(checkbox, targetId) {
-    if(!checkbox) return;
-    checkbox.addEventListener('change', () => {
-        toggleSubField(targetId, checkbox.checked);
+        if(check) {
+            check.addEventListener('change', () => {
+                const target = document.getElementById(map[id]);
+                if(target) {
+                    if(check.checked) target.classList.remove('hidden');
+                    else target.classList.add('hidden');
+                }
+            });
+        }
     });
 }
 
-function toggleSubField(id, shouldShow) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (shouldShow) el.classList.remove('hidden');
-    else el.classList.add('hidden');
+// --- LIMPIAR FORMULARIO (Modo Crear) ---
+function resetForm() {
+    document.getElementById('gameForm').reset();
+    document.getElementById('docId').value = ""; // Importante: vaciar ID
+    document.getElementById('formTitle').innerText = "Añadir Nuevo Título";
+    
+    // Resetear visibilidad forzando eventos
+    document.getElementById('ubicacion').dispatchEvent(new Event('change'));
+    document.getElementById('tipo').dispatchEvent(new Event('change'));
+    
+    // Ocultar subs manualmente
+    document.querySelectorAll('.sub-field').forEach(el => el.classList.add('hidden'));
+}
+
+// --- CARGAR DATOS PARA EDITAR (Modo Edición) ---
+// Esta función se llama desde ui.js al pulsar "Editar"
+function openEditForm(docId, data) {
+    const formModal = document.getElementById('formModal');
+    document.getElementById('formTitle').innerText = "Editar: " + data.nombre;
+    document.getElementById('docId').value = docId;
+
+    // Rellenar básicos
+    document.getElementById('nombre').value = data.nombre;
+    document.getElementById('tipo').value = data.tipo;
+    document.getElementById('ubicacion').value = data.ubicacion;
+    document.getElementById('tamano').value = data.tamano;
+    document.getElementById('descripcion').value = data.descripcion || '';
+    document.getElementById('imagenUrl').value = data.imagenUrl || '';
+
+    // Disparar cambios para mostrar secciones condicionales
+    document.getElementById('tipo').dispatchEvent(new Event('change'));
+    document.getElementById('ubicacion').dispatchEvent(new Event('change'));
+
+    // Rellenar Checkboxes y Subcampos
+    setCheckAndFill('tieneUpdatesLocales', 'subFieldUpdates', data.tieneUpdatesLocales, 
+        () => document.getElementById('tamanoUpdates').value = data.tamanoUpdates || '');
+
+    setCheckAndFill('tieneSavegame', 'subFieldSavegame', data.tieneSavegame,
+        () => document.getElementById('savegameNotas').value = data.savegameNotas || '');
+
+    setCheckAndFill('dlss', 'subFieldDlss', data.dlss,
+        () => document.getElementById('dlssVersion').value = data.dlssVersion || '');
+
+    setCheckAndFill('tieneMods', 'subFieldMods', data.tieneMods,
+        () => {
+            document.getElementById('tamanoMods').value = data.tamanoMods || '';
+            document.getElementById('modsDescripcion').value = data.modsDescripcion || '';
+        });
+
+    formModal.classList.add('active');
+}
+
+// Helper para rellenar checkboxes y mostrar su área
+function setCheckAndFill(checkId, subId, isChecked, fillFn) {
+    const chk = document.getElementById(checkId);
+    chk.checked = !!isChecked;
+    if(isChecked) {
+        document.getElementById(subId).classList.remove('hidden');
+        fillFn();
+    } else {
+        document.getElementById(subId).classList.add('hidden');
+    }
 }
 
 
-// --- PARTE 2: LÓGICA DE GUARDADO (NUEVO) ---
+// --- GUARDAR (CREAR O ACTUALIZAR) ---
 function setupFormSubmit() {
     const form = document.getElementById('gameForm');
-    
     if(!form) return;
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evitar que la página se recargue
+        e.preventDefault();
 
-        // 1. Recoger datos básicos
-        const nombre = document.getElementById('nombre').value;
-        const tipo = document.getElementById('tipo').value;
-        const ubicacion = document.getElementById('ubicacion').value;
-        const tamano = parseFloat(document.getElementById('tamano').value);
-        const descripcion = document.getElementById('descripcion').value;
-        const imagenUrl = document.getElementById('imagenUrl').value;
-
-        // Objeto base
-        let nuevoItem = {
-            nombre: nombre,
-            tipo: tipo,
-            ubicacion: ubicacion,
-            tamano: tamano,
-            descripcion: descripcion,
-            imagenUrl: imagenUrl,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp() // Fecha automática
+        // Recoger datos
+        const docId = document.getElementById('docId').value; // Si tiene valor, es EDICIÓN
+        
+        const item = {
+            nombre: document.getElementById('nombre').value,
+            tipo: document.getElementById('tipo').value,
+            ubicacion: document.getElementById('ubicacion').value,
+            tamano: parseFloat(document.getElementById('tamano').value) || 0,
+            descripcion: document.getElementById('descripcion').value,
+            imagenUrl: document.getElementById('imagenUrl').value,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp() // Fecha actualización
         };
 
-        // 2. Añadir datos condicionales (Solo si corresponden)
-        
-        // A) Si es Disco Físico (HDD/M2)
-        if (['hdd1', 'hdd2', 'm2'].includes(ubicacion)) {
-            const checkUpdates = document.getElementById('tieneUpdatesLocales');
-            const checkSavegame = document.getElementById('tieneSavegame');
+        if(!docId) {
+            // Solo si es nuevo ponemos fecha creación
+            item.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        }
 
-            if (checkUpdates && checkUpdates.checked) {
-                nuevoItem.tieneUpdatesLocales = true;
-                nuevoItem.tamanoUpdates = parseFloat(document.getElementById('tamanoUpdates').value) || 0;
+        // Condicionales físicos
+        if(['hdd1','hdd2','m2'].includes(item.ubicacion)) {
+            if(document.getElementById('tieneUpdatesLocales').checked) {
+                item.tieneUpdatesLocales = true;
+                item.tamanoUpdates = parseFloat(document.getElementById('tamanoUpdates').value) || 0;
+            } else {
+                item.tieneUpdatesLocales = false;
+                item.tamanoUpdates = 0;
             }
 
-            if (checkSavegame && checkSavegame.checked) {
-                nuevoItem.tieneSavegame = true;
-                nuevoItem.savegameNotas = document.getElementById('savegameNotas').value;
+            if(document.getElementById('tieneSavegame').checked) {
+                item.tieneSavegame = true;
+                item.savegameNotas = document.getElementById('savegameNotas').value;
+            } else {
+                item.tieneSavegame = false;
+                item.savegameNotas = "";
             }
         }
 
-        // B) Si es Videojuego
-        if (tipo === 'videojuego') {
-            const checkDlss = document.getElementById('dlss');
-            const checkMods = document.getElementById('tieneMods');
-
-            if (checkDlss && checkDlss.checked) {
-                nuevoItem.dlss = true;
-                nuevoItem.dlssVersion = document.getElementById('dlssVersion').value;
+        // Condicionales Videojuego
+        if(item.tipo === 'videojuego') {
+            if(document.getElementById('dlss').checked) {
+                item.dlss = true;
+                item.dlssVersion = document.getElementById('dlssVersion').value;
+            } else {
+                item.dlss = false;
+                item.dlssVersion = "";
             }
 
-            if (checkMods && checkMods.checked) {
-                nuevoItem.tieneMods = true;
-                nuevoItem.tamanoMods = parseFloat(document.getElementById('tamanoMods').value) || 0;
-                nuevoItem.modsDescripcion = document.getElementById('modsDescripcion').value;
+            if(document.getElementById('tieneMods').checked) {
+                item.tieneMods = true;
+                item.tamanoMods = parseFloat(document.getElementById('tamanoMods').value) || 0;
+                item.modsDescripcion = document.getElementById('modsDescripcion').value;
+            } else {
+                item.tieneMods = false;
+                item.tamanoMods = 0;
+                item.modsDescripcion = "";
             }
         }
 
-        // 3. ENVIAR A FIRESTORE
+        // ENVIAR A FIRESTORE
         try {
             const btn = form.querySelector('button[type="submit"]');
-            const textoOriginal = btn.innerText;
+            btn.disabled = true; 
             btn.innerText = "Guardando...";
-            btn.disabled = true;
 
-            // Guardamos en la colección "inventario"
-            await db.collection("inventario").add(nuevoItem);
+            if (docId) {
+                // UPDATE
+                await db.collection("inventario").doc(docId).update(item);
+                alert("¡Juego actualizado correctamente!");
+            } else {
+                // CREATE
+                await db.collection("inventario").add(item);
+                alert("¡Juego añadido correctamente!");
+            }
 
-            // 4. ÉXITO
-            alert("¡Guardado correctamente!");
-            form.reset(); // Limpiar formulario
-            
-            // Cerrar modal
+            // Cerrar y limpiar
             document.getElementById('formModal').classList.remove('active');
-            
-            // Restaurar botón
-            btn.innerText = textoOriginal;
+            resetForm();
             btn.disabled = false;
+            btn.innerText = "Guardar Datos";
             
-            // Resetear lógica visual (ocultar campos extra)
-            initFormLogic();
+            // Si estábamos en una ubicación, refrescar
+            const gamesSec = document.getElementById('gamesSection');
+            if(!gamesSec.classList.contains('hidden')) {
+                // Truco sucio para refrescar: simular click en volver y luego... 
+                // Mejor: simplemente volver al dashboard para forzar recarga al entrar de nuevo
+                // O recargar página. Para SPA simple, volver al dashboard es seguro.
+                document.getElementById('btnBack').click();
+                updateDiskSpace();
+            } else {
+                updateDiskSpace();
+            }
 
         } catch (error) {
-            console.error("Error al guardar:", error);
-            alert("Hubo un error al guardar: " + error.message);
-            
+            console.error(error);
+            alert("Error: " + error.message);
             const btn = form.querySelector('button[type="submit"]');
-            btn.innerText = "Guardar";
             btn.disabled = false;
+            btn.innerText = "Guardar Datos";
         }
     });
 }
