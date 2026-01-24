@@ -121,10 +121,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Carátula / Imagen</label>
-                    <input type="file" id="imageFile" accept="image/*">
-                    <input type="hidden" id="imagenUrl">
-                    <small style="color: #888;">Se subirá a Firebase Storage</small>
+                    <label for="imagenUrl">URL de Carátula / Imagen *</label>
+                    <input type="url" id="imagenUrl" required placeholder="https://ejemplo.com/imagen.jpg">
+                    <small style="color: #888;">Pega aquí el enlace directo a la imagen.</small>
                 </div>
 
                 <button type="submit" class="btn-primary">Guardar</button>
