@@ -22,9 +22,19 @@
         
         <section id="locationsSection">
             <h1 class="page-title">Mis Unidades</h1>
-            
             <div id="locationsContainer" class="locations-grid">
                 </div>
+        </section>
+
+        <section id="gamesSection" class="hidden">
+            <div class="section-header">
+                <button id="btnBack" class="btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Volver
+                </button>
+                <h2 id="currentLocationTitle">Listado</h2>
+            </div>
+
+            <div id="gamesContainer" class="games-grid"></div>
         </section>
 
     </main>
@@ -33,23 +43,22 @@
         <div class="modal-content modal-scrollable">
             <span class="close-modal">&times;</span>
             <h2>Gestión de Inventario</h2>
-            
             <form id="gameForm">
-                <input type="hidden" id="docId"> <div class="form-group">
-                    <label for="nombre">Nombre *</label>
+                <input type="hidden" id="docId">
+                <div class="form-group">
+                    <label>Nombre *</label>
                     <input type="text" id="nombre" required placeholder="Ej: Cyberpunk 2077">
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="tipo">Tipo de elemento *</label>
+                        <label>Tipo *</label>
                         <select id="tipo" required>
                             <option value="videojuego">Videojuego</option>
                             <option value="programa">Programa</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="ubicacion">Ubicación *</label>
+                        <label>Ubicación *</label>
                         <select id="ubicacion" required>
                             <option value="steam">Steam</option>
                             <option value="ubisoft">Ubisoft</option>
@@ -59,73 +68,46 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label for="tamano">Tamaño Base (GB) *</label>
-                    <input type="number" id="tamano" step="0.01" required placeholder="0.00">
+                    <label>Tamaño Base (GB) *</label>
+                    <input type="number" id="tamano" step="0.01" required>
                 </div>
-
                 <div id="locationFields" class="conditional-section hidden">
                     <h3 class="section-divider">Datos Locales</h3>
-                    
                     <div class="form-group-check">
-                        <label>
-                            <input type="checkbox" id="tieneUpdatesLocales"> Tiene Updates Locales
-                        </label>
+                        <label><input type="checkbox" id="tieneUpdatesLocales"> Updates Locales</label>
                         <div id="subFieldUpdates" class="sub-field hidden">
-                            <label>Tamaño Updates (GB)</label>
-                            <input type="number" id="tamanoUpdates" step="0.01">
+                            <label>GB Updates</label> <input type="number" id="tamanoUpdates" step="0.01">
                         </div>
                     </div>
-
                     <div class="form-group-check">
-                        <label>
-                            <input type="checkbox" id="tieneSavegame"> Tiene Savegame Local
-                        </label>
+                        <label><input type="checkbox" id="tieneSavegame"> Savegame Local</label>
                         <div id="subFieldSavegame" class="sub-field hidden">
-                            <label>Notas del Savegame</label>
-                            <textarea id="savegameNotas" rows="2" placeholder="Ej: Save respaldado..."></textarea>
+                            <textarea id="savegameNotas" rows="2"></textarea>
                         </div>
                     </div>
                 </div>
-
                 <div id="typeFields" class="conditional-section">
-                    <h3 class="section-divider">Datos Gráficos / Mods</h3>
-
+                    <h3 class="section-divider">Datos Gráficos</h3>
                     <div class="form-group-check">
-                        <label>
-                            <input type="checkbox" id="dlss"> Soporta DLSS
-                        </label>
+                        <label><input type="checkbox" id="dlss"> DLSS</label>
                         <div id="subFieldDlss" class="sub-field hidden">
-                            <label>Versión DLSS</label>
-                            <input type="text" id="dlssVersion" placeholder="Ej: 2.5">
+                            <input type="text" id="dlssVersion" placeholder="v2.5">
                         </div>
                     </div>
-
                     <div class="form-group-check">
-                        <label>
-                            <input type="checkbox" id="tieneMods"> Tiene Mods
-                        </label>
+                        <label><input type="checkbox" id="tieneMods"> Mods</label>
                         <div id="subFieldMods" class="sub-field hidden">
-                            <label>Tamaño Mods (GB)</label>
-                            <input type="number" id="tamanoMods" step="0.01">
-                            <label style="margin-top: 5px;">Descripción Mods</label>
-                            <textarea id="modsDescripcion" rows="2" placeholder="Descripción..."></textarea>
+                            <input type="number" id="tamanoMods" placeholder="GB"><textarea id="modsDescripcion"></textarea>
                         </div>
                     </div>
                 </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label for="descripcion">Descripción General</label>
-                    <textarea id="descripcion" rows="3"></textarea>
-                </div>
-
                 <div class="form-group">
-                    <label for="imagenUrl">URL de Carátula / Imagen *</label>
-                    <input type="url" id="imagenUrl" required placeholder="https://ejemplo.com/imagen.jpg">
-                    <small style="color: #888;">Pega aquí el enlace directo a la imagen.</small>
+                    <label>Descripción</label><textarea id="descripcion" rows="2"></textarea>
                 </div>
-
+                <div class="form-group">
+                    <label>URL Imagen *</label><input type="url" id="imagenUrl" required>
+                </div>
                 <button type="submit" class="btn-primary">Guardar</button>
             </form>
         </div>
@@ -133,12 +115,10 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
     <script src="js/firebase.js"></script>
-
-    <script src="js/data.js"></script> 
-    <script src="js/ui.js"></script>   
-    <script src="js/form.js"></script> 
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/form.js"></script>
 
 </body>
 </html>

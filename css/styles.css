@@ -1,112 +1,80 @@
-/* --- VARIABLES --- */
-:root {
-    --bg-body: #121212;
-    --bg-card: #1e1e1e;
-    --text-main: #ffffff;
-    --text-muted: #b0b0b0;
-    --accent: #bb86fc; 
-    --card-hover: #2d2d2d;
+/* --- ESTILOS DE LISTADO DE JUEGOS (NUEVO) --- */
+
+/* Cabecera con botón volver */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.btn-secondary {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+}
+.btn-secondary:hover { background-color: #444; }
+
+/* Grid de Juegos (Pósters) */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Móvil: 2 columnas */
+    gap: 15px;
+}
+@media (min-width: 600px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 900px) { .games-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1200px) { .games-grid { grid-template-columns: repeat(5, 1fr); } }
+
+/* Tarjeta de Juego Individual */
+.game-card {
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+    aspect-ratio: 2/3; /* Formato vertical tipo póster */
+}
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
 
-/* --- RESET --- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background-color: var(--bg-body); color: var(--text-main); font-family: sans-serif; padding-bottom: 50px; }
-.container { padding: 20px; max-width: 1200px; margin: 0 auto; }
-
-/* --- HEADER --- */
-.main-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 15px 20px; background-color: var(--bg-card);
-    border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100;
-}
-.logo { font-weight: bold; font-size: 1.2rem; color: var(--accent); }
-.btn-icon { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 5px; }
-
-/* --- GRID UNIDADES --- */
-.locations-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; }
-@media (min-width: 600px) { .locations-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .locations-grid { grid-template-columns: repeat(3, 1fr); } }
-
-/* --- TARJETAS --- */
-.location-card {
-    background-color: var(--bg-card); border-radius: 12px; overflow: hidden;
-    cursor: pointer; transition: transform 0.2s, background-color 0.2s;
-    border: 1px solid #333; display: flex; flex-direction: column;
-}
-.location-card:active { transform: scale(0.98); }
-.location-card:hover { background-color: var(--card-hover); border-color: var(--accent); }
-
-.card-image-box {
-    width: 100%; height: 150px; background-color: #2a2a2a;
-    display: flex; justify-content: center; align-items: center;
-    padding: 10px; border-bottom: 1px solid #333;
-}
-.card-image-box img {
-    max-width: 100%; max-height: 100%; object-fit: contain;
-    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
-}
-.card-info { padding: 15px; }
-.card-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
-
-.space-bar-container { margin-top: 10px; background: #333; height: 6px; border-radius: 3px; width: 100%; overflow: hidden; }
-.space-bar-fill { height: 100%; background-color: var(--accent); width: 0%; }
-
-/* --- MODAL (Ventana Emergente) --- */
-.modal {
-    display: none; /* Oculto por defecto */
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.85); z-index: 1000;
-    justify-content: center; align-items: center;
-}
-.modal.active { display: flex; } /* Se muestra con JS */
-
-.modal-content {
-    background-color: var(--bg-card); padding: 25px; border-radius: 12px;
-    width: 90%; max-width: 500px; border: 1px solid #444; position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+/* Imagen del juego */
+.game-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Llena la tarjeta y recorta lo que sobre */
+    display: block;
 }
 
-.modal-scrollable {
-    max-height: 90vh;
-    overflow-y: auto;
+/* Overlay con información (aparece abajo) */
+.game-info-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
+    padding: 20px 10px 10px 10px;
+    color: white;
 }
-
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
-
-/* --- ESTILOS FORMULARIO --- */
-.form-group { margin-bottom: 15px; }
-.form-row { display: flex; gap: 15px; }
-.form-row .form-group { flex: 1; }
-
-label { display: block; margin-bottom: 5px; color: #bbb; font-size: 0.9rem; }
-input, select, textarea {
-    width: 100%; padding: 10px; background: #121212;
-    border: 1px solid #444; border-radius: 6px; color: white; font-size: 1rem;
+.game-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.btn-primary {
-    width: 100%; padding: 12px; background-color: var(--accent);
-    border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;
+.game-meta {
+    font-size: 0.75rem;
+    color: #ccc;
+    display: flex; justify-content: space-between;
 }
-
-/* Lógica Condicional */
-.conditional-section {
-    background-color: #252525; padding: 10px; border-radius: 8px;
-    margin-bottom: 15px; border-left: 3px solid var(--accent);
+.badge-dlss {
+    background-color: #76b900; /* Verde NVIDIA */
+    color: black; padding: 2px 4px; border-radius: 3px; font-weight: bold; font-size: 0.6rem;
 }
-.section-divider {
-    font-size: 0.85rem; color: var(--accent); text-transform: uppercase;
-    margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px;
+.badge-mods {
+    background-color: var(--accent);
+    color: black; padding: 2px 4px; border-radius: 3px; font-weight: bold; font-size: 0.6rem;
 }
-.form-group-check { margin-bottom: 10px; }
-.form-group-check label { display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e0e0e0; }
-.form-group-check input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
-
-/* Sub-campos animados */
-.sub-field {
-    margin-top: 8px; margin-left: 30px; padding: 8px;
-    background-color: #1a1a1a; border-radius: 6px; border: 1px solid #333;
-    animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-.hidden { display: none !important; }
