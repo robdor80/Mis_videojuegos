@@ -1,34 +1,179 @@
-/* --- ESTILOS DE LISTADO DE JUEGOS (NUEVO) --- */
+/* =========================================
+   1. VARIABLES & RESET
+   ========================================= */
+:root {
+    --bg-body: #121212;       /* Fondo principal */
+    --bg-card: #1e1e1e;       /* Fondo tarjetas */
+    --text-main: #ffffff;
+    --text-muted: #b0b0b0;
+    --accent: #bb86fc;        /* Púrpura principal */
+    --accent-hover: #9e47f5;
+    --card-hover: #2d2d2d;
+    --badge-dlss: #76b900;    /* Verde Nvidia */
+    --danger: #cf6679;
+}
 
-/* Cabecera con botón volver */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 60px; /* Espacio para scroll en móvil */
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* =========================================
+   2. HEADER
+   ========================================= */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo i { color: var(--accent); }
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+.btn-icon:hover { transform: scale(1.1); color: var(--accent); }
+
+/* =========================================
+   3. DASHBOARD (UBICACIONES)
+   ========================================= */
+.page-title { margin-bottom: 20px; font-size: 1.5rem; }
+
+.locations-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Móvil: 1 columna */
+    gap: 20px;
+}
+
+/* Media Queries para Ubicaciones */
+@media (min-width: 600px) { .locations-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .locations-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.location-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-card:active { transform: scale(0.98); }
+.location-card:hover { 
+    background-color: var(--card-hover); 
+    border-color: var(--accent);
+    transform: translateY(-3px);
+}
+
+/* Caja para tus PNGs (con fondo gris para contraste) */
+.card-image-box {
+    width: 100%;
+    height: 150px;
+    background-color: #2a2a2a; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.card-image-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ajusta sin recortar */
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+}
+
+.card-info { padding: 15px; }
+.card-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+
+/* Barra de espacio */
+.space-bar-container {
+    margin-top: 10px;
+    background: #333;
+    height: 6px;
+    border-radius: 3px;
+    width: 100%;
+    overflow: hidden;
+}
+.space-bar-fill {
+    height: 100%;
+    background-color: var(--accent);
+    width: 0%; /* Se llena con JS */
+}
+
+/* =========================================
+   4. LISTADO DE JUEGOS (GRID PÓSTERS)
+   ========================================= */
 .section-header {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
+
 .btn-secondary {
     background-color: #333;
     color: white;
-    border: none;
-    padding: 8px 15px;
+    border: 1px solid #444;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
-    display: flex; align-items: center; gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
 }
-.btn-secondary:hover { background-color: #444; }
+.btn-secondary:hover { background-color: #444; border-color: #666; }
 
-/* Grid de Juegos (Pósters) */
 .games-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* Móvil: 2 columnas */
     gap: 15px;
 }
+
+/* Media Queries para Juegos */
 @media (min-width: 600px) { .games-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 900px) { .games-grid { grid-template-columns: repeat(4, 1fr); } }
 @media (min-width: 1200px) { .games-grid { grid-template-columns: repeat(5, 1fr); } }
 
-/* Tarjeta de Juego Individual */
 .game-card {
     background-color: var(--bg-card);
     border-radius: 8px;
@@ -36,45 +181,188 @@
     position: relative;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: transform 0.2s;
-    aspect-ratio: 2/3; /* Formato vertical tipo póster */
+    aspect-ratio: 2/3; /* Formato vertical estándar */
+    cursor: pointer;
+    border: 1px solid transparent;
 }
+
 .game-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    border-color: var(--accent);
 }
 
-/* Imagen del juego */
 .game-cover {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Llena la tarjeta y recorta lo que sobre */
+    object-fit: cover; /* Llena todo el espacio */
     display: block;
 }
 
-/* Overlay con información (aparece abajo) */
+/* Información sobre la imagen (Overlay) */
 .game-info-overlay {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
-    padding: 20px 10px 10px 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0));
+    padding: 40px 10px 10px 10px;
     color: white;
 }
+
 .game-title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: bold;
     margin-bottom: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
+
 .game-meta {
     font-size: 0.75rem;
-    color: #ccc;
-    display: flex; justify-content: space-between;
+    color: #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+/* Badges (Etiquetas) */
 .badge-dlss {
-    background-color: #76b900; /* Verde NVIDIA */
-    color: black; padding: 2px 4px; border-radius: 3px; font-weight: bold; font-size: 0.6rem;
+    background-color: var(--badge-dlss);
+    color: black;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: 800;
+    font-size: 0.6rem;
+    letter-spacing: 0.5px;
 }
+
 .badge-mods {
     background-color: var(--accent);
-    color: black; padding: 2px 4px; border-radius: 3px; font-weight: bold; font-size: 0.6rem;
+    color: black;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: 800;
+    font-size: 0.6rem;
 }
+
+/* =========================================
+   5. MODAL & FORMULARIO
+   ========================================= */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+.modal.active { display: flex; }
+
+.modal-content {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 500px;
+    border: 1px solid #444;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.modal-scrollable {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+}
+.close-modal:hover { color: white; }
+
+/* Inputs Formulario */
+.form-group { margin-bottom: 15px; }
+.form-row { display: flex; gap: 15px; }
+.form-row .form-group { flex: 1; }
+
+label { display: block; margin-bottom: 5px; color: #bbb; font-size: 0.9rem; }
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    background: #121212;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent);
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+.btn-primary:hover { background-color: var(--accent-hover); }
+.btn-primary:disabled { background-color: #555; cursor: not-allowed; }
+
+/* Lógica Condicional (Secciones ocultas) */
+.conditional-section {
+    background-color: #252525;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 3px solid var(--accent);
+}
+
+.section-divider {
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.form-group-check { margin-bottom: 8px; }
+.form-group-check label { display: flex; align-items: center; gap: 10px; cursor: pointer; color: #e0e0e0; font-size: 0.95rem; }
+.form-group-check input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* Sub-campos animados */
+.sub-field {
+    margin-top: 10px;
+    margin-left: 28px;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border-radius: 6px;
+    border: 1px solid #333;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utilidad Global */
+.hidden { display: none !important; }
