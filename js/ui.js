@@ -8,10 +8,14 @@ window.appState = {
 
 const FALLBACK_COVER_URL = 'https://via.placeholder.com/200x300?text=Sin+imagen';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadLocationsData();
+    if (window.populateLocationSelect) window.populateLocationSelect();
+
     renderDashboard();
     updateDiskSpace();
     setupModalEvents();
+    setupLocationEvents();
     setupSearch();
     setupScrollTop();
 
@@ -46,10 +50,10 @@ function renderDashboard() {
         if(loc.tipo === 'disk') {
             espacioHtml = `
                 <div class="space-bar-container">
-                    <div id="bar-${loc.id}" class="space-bar-fill" style="width: 0%"></div>
+                    <div id="bar-${escapeHtml(loc.id)}" class="space-bar-fill" style="width: 0%"></div>
                 </div>
-                <small id="text-${loc.id}" style="color: #aaa; display:flex; justify-content:space-between;">
-                    <span>Calculando...</span><span>Total: ${loc.capacidad} GB</span>
+                <small id="text-${escapeHtml(loc.id)}" style="color: #aaa; display:flex; justify-content:space-between;">
+                    <span>Calculando...</span><span>Total: ${Number(loc.capacidad).toFixed(1)} GB</span>
                 </small>
             `;
         } else {
@@ -60,9 +64,36 @@ function renderDashboard() {
         card.className = 'location-card';
         card.onclick = () => openLocation(loc);
         card.innerHTML = `
-            <div class="card-image-box"><img src="${loc.img}" alt="${loc.nombre}"></div>
-            <div class="card-info"><h3>${loc.nombre}</h3>${espacioHtml}</div>
+            ${loc.custom ? `
+                <div class="location-actions">
+                    <button type="button" class="location-action-btn edit-location" title="Editar almacenamiento">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button type="button" class="location-action-btn delete-location" title="Eliminar almacenamiento">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            ` : ''}
+            <div class="card-image-box"><img src="${escapeHtml(loc.img)}" alt="${escapeHtml(loc.nombre)}"></div>
+            <div class="card-info"><h3>${escapeHtml(loc.nombre)}</h3>${espacioHtml}</div>
         `;
+
+        const editBtn = card.querySelector('.edit-location');
+        if(editBtn) {
+            editBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                openLocationForm(loc);
+            });
+        }
+
+        const deleteBtn = card.querySelector('.delete-location');
+        if(deleteBtn) {
+            deleteBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                deleteLocation(loc);
+            });
+        }
+
         container.appendChild(card);
     });
 }
@@ -338,7 +369,7 @@ async function updateDiskSpace() {
                     let color = "#03dac6";
                     if(percent > 75) color = "#ffb74d";
                     if(percent > 90) color = "#cf6679";
-                    bar.style.width = `${percent}%`;
+                    bar.style.width = `${Math.min(percent, 100)}%`;
                     bar.style.backgroundColor = color;
                     txt.innerHTML = `<span style="color:${color};font-weight:bold">Libre: ${free.toFixed(1)} GB</span><span>Total: ${l.capacidad} GB</span>`;
                 }
@@ -371,28 +402,150 @@ function setupModalEvents() {
         formModal.classList.add('active');
     });
     if(closeForm) closeForm.addEventListener('click', () => formModal.classList.remove('active'));
+
+    const locationModal = document.getElementById('locationModal');
+    const closeLocation = document.querySelector('.close-location-modal');
+    if(closeLocation) closeLocation.addEventListener('click', () => locationModal.classList.remove('active'));
+
     const detailModal = document.getElementById('detailModal');
     const closeDetail = document.querySelector('.close-detail-modal');
     if(closeDetail) closeDetail.addEventListener('click', () => detailModal.classList.remove('active'));
     window.addEventListener('click', (e) => {
         if(e.target === formModal) formModal.classList.remove('active');
+        if(e.target === locationModal) locationModal.classList.remove('active');
         if(e.target === detailModal) detailModal.classList.remove('active');
     });
 }
 
+// --- GESTION DE UBICACIONES ---
+function setupLocationEvents() {
+    const btnManageLocations = document.getElementById('btnManageLocations');
+    if(btnManageLocations) btnManageLocations.addEventListener('click', () => openLocationForm());
+
+    const locationForm = document.getElementById('locationForm');
+    if(locationForm) {
+        locationForm.addEventListener('submit', saveLocation);
+    }
+
+    const btnDeleteLocation = document.getElementById('btnDeleteLocation');
+    if(btnDeleteLocation) {
+        btnDeleteLocation.addEventListener('click', () => {
+            const docId = document.getElementById('locationDocId').value;
+            const location = locationsData.find(loc => loc.docId === docId);
+            if(location) deleteLocation(location);
+        });
+    }
+}
+
+function openLocationForm(location = null) {
+    const locationModal = document.getElementById('locationModal');
+    const deleteBtn = document.getElementById('btnDeleteLocation');
+
+    document.getElementById('locationForm').reset();
+    document.getElementById('locationDocId').value = location?.docId || '';
+    document.getElementById('locationFormTitle').innerText = location ? `Editar: ${location.nombre}` : 'Añadir Almacenamiento';
+    document.getElementById('locationName').value = location?.nombre || '';
+    document.getElementById('locationImageUrl').value = location?.img || '';
+    document.getElementById('locationCapacity').value = location?.capacidad || '';
+
+    if(deleteBtn) deleteBtn.classList.toggle('hidden', !location);
+    locationModal.classList.add('active');
+}
+
+async function saveLocation(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const docId = document.getElementById('locationDocId').value;
+    const btn = form.querySelector('button[type="submit"]');
+    const item = {
+        nombre: document.getElementById('locationName').value.trim(),
+        img: document.getElementById('locationImageUrl').value.trim(),
+        capacidad: parseFloat(document.getElementById('locationCapacity').value) || 0,
+        tipo: 'disk',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (!item.nombre || !item.img || item.capacidad <= 0) {
+        alert("Completa nombre, imagen y capacidad con valores válidos.");
+        return;
+    }
+
+    try {
+        btn.disabled = true;
+        btn.innerText = "Guardando...";
+
+        if(docId) {
+            await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(docId).update(item);
+            alert("Almacenamiento actualizado.");
+        } else {
+            item.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection(STORAGE_LOCATIONS_COLLECTION).add(item);
+            alert("Almacenamiento añadido.");
+        }
+
+        document.getElementById('locationModal').classList.remove('active');
+        form.reset();
+        await reloadLocationsAndRefresh();
+    } catch (error) {
+        console.error(error);
+        alert("Error: " + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Guardar Almacenamiento";
+    }
+}
+
+async function deleteLocation(location) {
+    if(!location?.custom) return;
+
+    try {
+        const usedSnapshot = await db.collection("inventario").where("ubicacion", "==", location.id).limit(1).get();
+        if(!usedSnapshot.empty) {
+            alert("No se puede eliminar porque contiene juegos o programas. Muévelos antes a otra ubicación.");
+            return;
+        }
+
+        const confirmed = confirm(`¿Eliminar "${location.nombre}"?`);
+        if(!confirmed) return;
+
+        await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(location.docId).delete();
+        document.getElementById('locationModal').classList.remove('active');
+        await reloadLocationsAndRefresh();
+        alert("Almacenamiento eliminado.");
+    } catch (error) {
+        console.error(error);
+        alert("Error: " + error.message);
+    }
+}
+
+async function reloadLocationsAndRefresh() {
+    await loadLocationsData();
+    if (window.populateLocationSelect) window.populateLocationSelect();
+
+    if(window.appState.view === 'location' && !locationsData.some(loc => loc.id === window.appState.data?.id)) {
+        goBackToDashboard();
+        return;
+    }
+
+    window.refreshCurrentView();
+}
+
 // --- FUNCIÓN INTELIGENTE PARA REFRESCAR LA VISTA ACTUAL ---
 window.refreshCurrentView = function() {
-    updateDiskSpace(); 
-
     const state = window.appState;
     if (state.view === 'location' && state.data) {
+        updateDiskSpace();
         openLocation(state.data);
     } else if (state.view === 'search' && state.data) {
+        updateDiskSpace();
         performSearch(state.data);
     } else if (state.view === 'all') {
+        updateDiskSpace();
         showAllInventory();
     } else {
         renderDashboard();
+        updateDiskSpace();
     }
 };
 

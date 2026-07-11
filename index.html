@@ -25,6 +25,9 @@
                 <button id="btnAddGame" class="nav-icon btn-add" title="Añadir Nuevo">
                     <i class="fa-solid fa-plus"></i>
                 </button>
+                <button id="btnManageLocations" class="nav-icon btn-storage" title="Añadir Almacenamiento">
+                    <i class="fa-solid fa-hard-drive"></i>
+                </button>
                 <button id="btnShowAll" class="nav-icon btn-show-all" title="Ver Todo el Inventario">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
@@ -75,10 +78,6 @@
                     <div class="form-group">
                         <label>Ubicación *</label>
                         <select id="ubicacion" required>
-                            <option value="steam">Steam</option>
-                            <option value="ubisoft">Ubisoft</option>
-                            <option value="hdd2">HDD 2 (WD Elements)</option>
-                            <option value="m2">SSD M.2 (Fanxiang)</option>
                         </select>
                     </div>
                 </div>
@@ -125,6 +124,32 @@
                     <input type="url" id="imagenUrl" required>
                 </div>
                 <button type="submit" class="btn-primary">Guardar Datos</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="locationModal" class="modal">
+        <div class="modal-content modal-scrollable">
+            <span class="close-modal close-location-modal">&times;</span>
+            <h2 id="locationFormTitle">Añadir Almacenamiento</h2>
+            <form id="locationForm">
+                <input type="hidden" id="locationDocId">
+                <div class="form-group">
+                    <label>Nombre del dispositivo *</label>
+                    <input type="text" id="locationName" required placeholder="Ej: SSD Portátil 2TB">
+                </div>
+                <div class="form-group">
+                    <label>URL Imagen *</label>
+                    <input type="url" id="locationImageUrl" required>
+                </div>
+                <div class="form-group">
+                    <label>Capacidad máxima (GB) *</label>
+                    <input type="number" id="locationCapacity" min="0.01" step="0.01" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar Almacenamiento</button>
+                    <button type="button" id="btnDeleteLocation" class="btn-danger hidden">Eliminar Almacenamiento</button>
+                </div>
             </form>
         </div>
     </div>

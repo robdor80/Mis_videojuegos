@@ -1,6 +1,7 @@
 // js/form.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    populateLocationSelect();
     initFormLogic();
     setupFormSubmit();
 });
@@ -14,7 +15,7 @@ function initFormLogic() {
         ubicacionSelect.addEventListener('change', () => {
             const val = ubicacionSelect.value;
             const fields = document.getElementById('locationFields');
-            const esFisico = ['hdd2', 'm2'].includes(val);
+            const esFisico = getPhysicalLocationIds().includes(val);
             if (esFisico) fields.classList.remove('hidden');
             else fields.classList.add('hidden');
         });
@@ -54,10 +55,32 @@ function resetForm() {
     document.getElementById('gameForm').reset();
     document.getElementById('docId').value = ""; 
     document.getElementById('formTitle').innerText = "Añadir Nuevo Título";
+    populateLocationSelect();
     document.getElementById('ubicacion').dispatchEvent(new Event('change'));
     document.getElementById('tipo').dispatchEvent(new Event('change'));
     document.querySelectorAll('.sub-field').forEach(el => el.classList.add('hidden'));
 }
+
+function populateLocationSelect(selectedValue = '') {
+    const select = document.getElementById('ubicacion');
+    if(!select || typeof locationsData === 'undefined') return;
+
+    const currentValue = selectedValue || select.value;
+    select.innerHTML = '';
+
+    locationsData.forEach(location => {
+        const option = document.createElement('option');
+        option.value = location.id;
+        option.textContent = location.nombre;
+        select.appendChild(option);
+    });
+
+    if(currentValue && locationsData.some(location => location.id === currentValue)) {
+        select.value = currentValue;
+    }
+}
+
+window.populateLocationSelect = populateLocationSelect;
 
 // --- CARGAR EDICIÓN ---
 function openEditForm(docId, data) {
@@ -67,6 +90,7 @@ function openEditForm(docId, data) {
 
     document.getElementById('nombre').value = data.nombre;
     document.getElementById('tipo').value = data.tipo;
+    populateLocationSelect(data.ubicacion);
     document.getElementById('ubicacion').value = data.ubicacion;
     document.getElementById('tamano').value = data.tamano;
     document.getElementById('descripcion').value = data.descripcion || '';
@@ -124,7 +148,7 @@ function setupFormSubmit() {
         if(!docId) item.createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
         // Lógica Físicos
-        if(['hdd2','m2'].includes(item.ubicacion)) {
+        if(getPhysicalLocationIds().includes(item.ubicacion)) {
             if(document.getElementById('tieneUpdatesLocales').checked) {
                 item.tieneUpdatesLocales = true;
                 item.tamanoUpdates = parseFloat(document.getElementById('tamanoUpdates').value) || 0;
