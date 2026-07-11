@@ -28,6 +28,9 @@
                 <button id="btnManageLocations" class="nav-icon btn-storage" title="Añadir Almacenamiento">
                     <i class="fa-solid fa-hard-drive"></i>
                 </button>
+                <button id="btnOpenReport" class="nav-icon btn-report" title="Informe PDF">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </button>
                 <button id="btnShowAll" class="nav-icon btn-show-all" title="Ver Todo el Inventario">
                     <i class="fa-solid fa-layer-group"></i>
                 </button>
@@ -178,16 +181,59 @@
         </div>
     </div>
 
+    <div id="reportModal" class="modal">
+        <div class="modal-content modal-scrollable report-modal-content">
+            <span class="close-modal close-report-modal">&times;</span>
+            <h2>Informe de Inventario</h2>
+            <div class="report-toolbar">
+                <div class="form-group">
+                    <label>Mostrar</label>
+                    <select id="reportTypeFilter">
+                        <option value="all">Todo</option>
+                        <option value="videojuego">Videojuegos</option>
+                        <option value="programa">Programas</option>
+                        <option value="otros">Otros</option>
+                    </select>
+                </div>
+                <button id="btnDownloadReport" class="btn-primary" type="button">
+                    <i class="fa-solid fa-file-arrow-down"></i> Descargar PDF
+                </button>
+            </div>
+            <div id="reportSummary" class="report-summary"></div>
+            <div class="report-table-wrapper">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Ubicación</th>
+                            <th>Base</th>
+                            <th>Updates</th>
+                            <th>Mods</th>
+                            <th>Total</th>
+                            <th>DLSS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <button id="btnScrollTop" class="btn-scroll-top" title="Subir arriba">
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="js/firebase.js"></script>
     <script src="js/data.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/form.js"></script>
+    <script src="js/report.js"></script>
     <script src="js/pwa.js"></script>
 
 </body>
