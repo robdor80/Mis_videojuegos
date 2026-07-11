@@ -173,9 +173,9 @@ async function downloadReportPdf() {
         const totalGb = items.reduce((sum, item) => sum + getItemTotalSize(item), 0);
         const imageCache = {};
 
-        await Promise.all(items.map(async item => {
+        await Promise.all(items.map(async (item, index) => {
             const imageUrl = item.imagenUrl || REPORT_FALLBACK_COVER_URL;
-            imageCache[item.id] = await loadImageAsDataUrl(imageUrl);
+            imageCache[getReportItemKey(item, index)] = await loadImageAsDataUrl(imageUrl);
         }));
 
         doc.setFontSize(16);
@@ -210,7 +210,9 @@ async function downloadReportPdf() {
                 if(data.section !== 'body' || data.column.index !== 0) return;
 
                 const item = items[data.row.index];
-                const imageData = imageCache[item.id];
+                if(!item) return;
+
+                const imageData = imageCache[getReportItemKey(item, data.row.index)];
                 if(!imageData) return;
 
                 doc.addImage(imageData, 'JPEG', data.cell.x + 3, data.cell.y + 2, 10, 14);
@@ -226,6 +228,10 @@ async function downloadReportPdf() {
         button.disabled = false;
         button.innerHTML = '<i class="fa-solid fa-file-arrow-down"></i> Descargar PDF';
     }
+}
+
+function getReportItemKey(item, index) {
+    return item?.id || `row-${index}`;
 }
 
 function loadImageAsDataUrl(url) {
