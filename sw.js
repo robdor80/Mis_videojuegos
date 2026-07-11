@@ -13,7 +13,6 @@ const urlsToCache = [
   './assets/header.webp',
   './assets/icon.png',
   './assets/locations/fanxiang.png',
-  './assets/locations/kesu.png',
   './assets/locations/steam.png',
   './assets/locations/ubisoft.png',
   './assets/locations/wd_3.0.png',

@@ -14,7 +14,7 @@ function initFormLogic() {
         ubicacionSelect.addEventListener('change', () => {
             const val = ubicacionSelect.value;
             const fields = document.getElementById('locationFields');
-            const esFisico = ['hdd1', 'hdd2', 'm2'].includes(val);
+            const esFisico = ['hdd2', 'm2'].includes(val);
             if (esFisico) fields.classList.remove('hidden');
             else fields.classList.add('hidden');
         });
@@ -124,7 +124,7 @@ function setupFormSubmit() {
         if(!docId) item.createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
         // Lógica Físicos
-        if(['hdd1','hdd2','m2'].includes(item.ubicacion)) {
+        if(['hdd2','m2'].includes(item.ubicacion)) {
             if(document.getElementById('tieneUpdatesLocales').checked) {
                 item.tieneUpdatesLocales = true;
                 item.tamanoUpdates = parseFloat(document.getElementById('tamanoUpdates').value) || 0;

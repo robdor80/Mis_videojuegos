@@ -21,13 +21,6 @@ const locationsData = [
         img: 'assets/locations/fanxiang.png'
     },
     {
-        id: 'hdd1',
-        nombre: 'Disco Kesu (Externo)',
-        tipo: 'disk',
-        capacidad: 700, // 700 GB
-        img: 'assets/locations/kesu.png'
-    },
-    {
         id: 'hdd2',
         nombre: 'WD Elements 3.0',
         tipo: 'disk',
