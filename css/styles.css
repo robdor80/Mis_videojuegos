@@ -27,7 +27,7 @@ body {
 .hero-header {
     width: 100%;
     height: 220px;
-    background-image: url('../assets/header.png');
+    background-image: url('../assets/header.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

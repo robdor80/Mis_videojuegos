@@ -8,7 +8,7 @@ const urlsToCache = [
   './js/data.js',
   './js/form.js',
   './js/firebase.js',
-  './assets/header.png',
+  './assets/header.webp',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
