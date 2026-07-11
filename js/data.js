@@ -5,67 +5,85 @@ const STORAGE_LOCATIONS_COLLECTION = "ubicaciones";
 const defaultLocationsData = [
     {
         id: 'steam',
+        docId: 'steam',
         nombre: 'Steam Library',
         tipo: 'cloud',
-        img: 'assets/locations/steam.png' 
+        img: 'assets/locations/steam.png',
+        custom: false
     },
     {
         id: 'ubisoft',
+        docId: 'ubisoft',
         nombre: 'Ubisoft Connect',
         tipo: 'cloud',
-        img: 'assets/locations/ubisoft.png'
+        img: 'assets/locations/ubisoft.png',
+        custom: false
     },
     {
         id: 'm2',
+        docId: 'm2',
         nombre: 'SSD Fanxiang (M.2)',
         tipo: 'disk',
         capacidad: 1000, // 1000 GB = 1TB (CAMBIA ESTO SI ES DIFERENTE)
-        img: 'assets/locations/fanxiang.png'
+        img: 'assets/locations/fanxiang.png',
+        custom: false
     },
     {
         id: 'hdd2',
+        docId: 'hdd2',
         nombre: 'WD Elements 3.0',
         tipo: 'disk',
         capacidad: 1000, // 1000 GB
-        img: 'assets/locations/wd_3.0.png'
+        img: 'assets/locations/wd_3.0.png',
+        custom: false
     }
 ];
 
 let locationsData = [...defaultLocationsData];
 
-function normalizeStorageLocation(doc) {
+function normalizeStorageLocation(doc, baseLocation = null) {
     const data = doc.data();
-    const capacidad = parseFloat(data.capacidad);
+    const tipo = data.tipo || baseLocation?.tipo || 'disk';
+    const capacidad = data.capacidad !== undefined ? parseFloat(data.capacidad) : baseLocation?.capacidad;
 
-    if (!data.nombre || !data.img || !Number.isFinite(capacidad) || capacidad <= 0) {
+    if (!data.nombre || !data.img || (tipo === 'disk' && (!Number.isFinite(capacidad) || capacidad <= 0))) {
         return null;
     }
 
     return {
-        id: doc.id,
+        id: baseLocation?.id || doc.id,
         docId: doc.id,
         nombre: data.nombre,
-        tipo: 'disk',
+        tipo,
         capacidad,
         img: data.img,
-        custom: true
+        custom: !baseLocation
     };
 }
 
 async function loadLocationsData() {
     try {
         const snapshot = await db.collection(STORAGE_LOCATIONS_COLLECTION).orderBy("nombre").get();
+        const baseLocations = defaultLocationsData.map(location => ({ ...location }));
         const customLocations = [];
 
         snapshot.forEach(doc => {
-            const location = normalizeStorageLocation(doc);
-            if (location) customLocations.push(location);
+            const baseIndex = baseLocations.findIndex(location => location.id === doc.id);
+            const location = normalizeStorageLocation(doc, baseLocations[baseIndex]);
+
+            if (!location) return;
+
+            if (baseIndex >= 0) {
+                baseLocations[baseIndex] = location;
+            } else {
+                customLocations.push(location);
+            }
         });
 
-        locationsData = [...defaultLocationsData, ...customLocations];
+        locationsData = [...baseLocations, ...customLocations];
     } catch (error) {
         console.error("Error cargando ubicaciones:", error);
-        locationsData = [...defaultLocationsData];
+        locationsData = defaultLocationsData.map(location => ({ ...location }));
     }
 
     window.locationsData = locationsData;

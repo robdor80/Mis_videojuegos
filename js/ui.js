@@ -64,16 +64,16 @@ function renderDashboard() {
         card.className = 'location-card';
         card.onclick = () => openLocation(loc);
         card.innerHTML = `
-            ${loc.custom ? `
-                <div class="location-actions">
-                    <button type="button" class="location-action-btn edit-location" title="Editar almacenamiento">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
+            <div class="location-actions">
+                <button type="button" class="location-action-btn edit-location" title="Editar almacenamiento">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                ${loc.custom ? `
                     <button type="button" class="location-action-btn delete-location" title="Eliminar almacenamiento">
                         <i class="fa-solid fa-trash"></i>
                     </button>
-                </div>
-            ` : ''}
+                ` : ''}
+            </div>
             <div class="card-image-box"><img src="${escapeHtml(loc.img)}" alt="${escapeHtml(loc.nombre)}"></div>
             <div class="card-info"><h3>${escapeHtml(loc.nombre)}</h3>${espacioHtml}</div>
         `;
@@ -476,7 +476,7 @@ async function saveLocation(event) {
         btn.innerText = "Guardando...";
 
         if(docId) {
-            await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(docId).update(item);
+            await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(docId).set(item, { merge: true });
             alert("Almacenamiento actualizado.");
         } else {
             item.createdAt = firebase.firestore.FieldValue.serverTimestamp();
