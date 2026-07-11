@@ -230,7 +230,7 @@ body {
 .detail-extra-box { margin-top: 10px; font-size: 0.9rem; color: #bbb; font-style: italic; background: #1a1a1a; padding: 10px; border-radius: 6px; }
 
 .report-modal-content { max-width: 1100px; }
-.report-toolbar { display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: end; margin: 15px 0; }
+.report-toolbar { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end; margin: 15px 0; }
 .report-toolbar .btn-primary { min-width: 190px; }
 .report-summary { background: #151515; border: 1px solid #333; border-radius: 8px; padding: 12px; margin-bottom: 15px; color: #ddd; line-height: 1.5; }
 .report-table-wrapper { overflow-x: auto; border: 1px solid #333; border-radius: 8px; }
@@ -238,6 +238,7 @@ body {
 .report-table th,
 .report-table td { padding: 10px; border-bottom: 1px solid #333; text-align: left; vertical-align: middle; font-size: 0.9rem; }
 .report-table th { color: var(--accent); background: #1a1a1a; position: sticky; top: 0; z-index: 1; }
+.report-subtotal-row td { background: #252525; color: var(--accent); font-weight: 800; border-top: 2px solid var(--accent); }
 .report-thumb { width: 42px; height: 58px; object-fit: cover; border-radius: 4px; background: #252525; display: block; }
 
 @media (max-width: 700px) {
@@ -376,6 +377,14 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
         background: #eee;
         color: black;
         position: static;
+    }
+
+    .report-subtotal-row td {
+        background: #f0f0f0;
+        color: black;
+        border-top: 2px solid #666;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
     }
 
     .report-thumb {

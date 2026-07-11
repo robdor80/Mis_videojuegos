@@ -12,11 +12,13 @@ function setupReportEvents() {
     const reportModal = document.getElementById('reportModal');
     const closeReport = document.querySelector('.close-report-modal');
     const filter = document.getElementById('reportTypeFilter');
+    const sortOrder = document.getElementById('reportSortOrder');
     const downloadBtn = document.getElementById('btnDownloadReport');
 
     if(btnOpenReport) btnOpenReport.addEventListener('click', openReportModal);
     if(closeReport) closeReport.addEventListener('click', () => reportModal.classList.remove('active'));
     if(filter) filter.addEventListener('change', renderReport);
+    if(sortOrder) sortOrder.addEventListener('change', renderReport);
     if(downloadBtn) downloadBtn.addEventListener('click', downloadReportPdf);
 
     window.addEventListener('click', (event) => {
@@ -55,8 +57,36 @@ function getReportFilterValue() {
 
 function getFilteredReportItems() {
     const filter = getReportFilterValue();
-    if(filter === 'all') return reportItems;
-    return reportItems.filter(item => (item.tipo || 'videojuego') === filter);
+    const filteredItems = filter === 'all'
+        ? [...reportItems]
+        : reportItems.filter(item => (item.tipo || 'videojuego') === filter);
+
+    return sortReportItems(filteredItems);
+}
+
+function getReportSortOrder() {
+    return document.getElementById('reportSortOrder')?.value || 'name';
+}
+
+function sortReportItems(items) {
+    const sortOrder = getReportSortOrder();
+    const collator = new Intl.Collator('es', { sensitivity: 'base', numeric: true });
+
+    return items.sort((a, b) => {
+        if(sortOrder === 'location') {
+            const locationCompare = collator.compare(getLocationName(a.ubicacion), getLocationName(b.ubicacion));
+            if(locationCompare !== 0) return locationCompare;
+            return collator.compare(a.nombre || '', b.nombre || '');
+        }
+
+        if(sortOrder === 'size') {
+            const sizeCompare = getItemTotalSize(b) - getItemTotalSize(a);
+            if(sizeCompare !== 0) return sizeCompare;
+            return collator.compare(a.nombre || '', b.nombre || '');
+        }
+
+        return collator.compare(a.nombre || '', b.nombre || '');
+    });
 }
 
 function getItemTotalSize(item) {
@@ -123,7 +153,24 @@ function renderReportTable(items) {
         return;
     }
 
-    items.forEach(item => {
+    let currentLocation = null;
+    let locationTotal = 0;
+    let locationCount = 0;
+    const showLocationSubtotals = getReportSortOrder() === 'location';
+
+    items.forEach((item, index) => {
+        const locationName = getLocationName(item.ubicacion);
+
+        if(showLocationSubtotals && currentLocation !== null && locationName !== currentLocation) {
+            tbody.appendChild(createLocationSubtotalRow(currentLocation, locationTotal, locationCount));
+            locationTotal = 0;
+            locationCount = 0;
+        }
+
+        currentLocation = locationName;
+        locationTotal += getItemTotalSize(item);
+        locationCount += 1;
+
         const tr = document.createElement('tr');
         const total = getItemTotalSize(item);
         const dlss = item.dlss ? `Sí ${item.dlssVersion || ''}` : 'No';
@@ -133,7 +180,7 @@ function renderReportTable(items) {
             <td><img class="report-thumb" src="${escapeReportHtml(imageUrl)}" alt="${escapeReportHtml(item.nombre || '')}" onerror="this.onerror=null;this.src='${REPORT_FALLBACK_COVER_URL}'"></td>
             <td>${escapeReportHtml(item.nombre || '')}</td>
             <td>${escapeReportHtml(getTypeLabel(item.tipo))}</td>
-            <td>${escapeReportHtml(getLocationName(item.ubicacion))}</td>
+            <td>${escapeReportHtml(locationName)}</td>
             <td>${(item.tamano || 0).toFixed(1)} GB</td>
             <td>${(item.tamanoUpdates || 0).toFixed(1)} GB</td>
             <td>${(item.tamanoMods || 0).toFixed(1)} GB</td>
@@ -141,7 +188,22 @@ function renderReportTable(items) {
             <td>${escapeReportHtml(dlss)}</td>
         `;
         tbody.appendChild(tr);
+
+        if(showLocationSubtotals && index === items.length - 1) {
+            tbody.appendChild(createLocationSubtotalRow(currentLocation, locationTotal, locationCount));
+        }
     });
+}
+
+function createLocationSubtotalRow(locationName, totalGb, itemCount) {
+    const tr = document.createElement('tr');
+    tr.className = 'report-subtotal-row';
+    tr.innerHTML = `
+        <td colspan="7">Total en ${escapeReportHtml(locationName)} (${itemCount} elementos)</td>
+        <td>${totalGb.toFixed(1)} GB</td>
+        <td></td>
+    `;
+    return tr;
 }
 
 async function downloadReportPdf() {
