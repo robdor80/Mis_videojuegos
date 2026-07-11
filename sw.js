@@ -1,5 +1,5 @@
 // sw.js - Service Worker
-const CACHE_NAME = 'inventory-v9';
+const CACHE_NAME = 'inventory-v10';
 const urlsToCache = [
   './',
   './index.html',
