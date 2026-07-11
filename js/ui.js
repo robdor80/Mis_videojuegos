@@ -312,14 +312,46 @@ function createGameCard(data, docId) {
 
     const imgUrl = data.imagenUrl || FALLBACK_COVER_URL;
     div.innerHTML = `
+        <button type="button" class="game-delete-btn" title="Eliminar">
+            <i class="fa-solid fa-trash"></i>
+        </button>
         <img src="${escapeHtml(imgUrl)}" class="game-cover" onerror="this.onerror=null;this.src='${FALLBACK_COVER_URL}'">
         <div class="game-info-overlay">
             <div class="game-title">${escapeHtml(data.nombre)}</div>
             <div class="game-meta"><span>${total.toFixed(1)} GB</span><span>${badges}</span></div>
         </div>
     `;
+
+    const deleteBtn = div.querySelector('.game-delete-btn');
+    deleteBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        deleteGame(docId, data);
+    });
+
     div.onclick = () => openDetailModal(docId, data);
     return div;
+}
+
+async function deleteGame(docId, data) {
+    if(!docId) return;
+
+    const name = data?.nombre || 'este elemento';
+    const confirmed = confirm(`¿Eliminar "${name}" del inventario?`);
+    if(!confirmed) return;
+
+    try {
+        await db.collection("inventario").doc(docId).delete();
+        if(window.currentGameId === docId) {
+            window.currentGameId = null;
+            window.currentGameData = null;
+            document.getElementById('detailModal')?.classList.remove('active');
+        }
+        window.refreshCurrentView();
+        alert("Elemento eliminado.");
+    } catch (error) {
+        console.error(error);
+        alert("Error al eliminar: " + error.message);
+    }
 }
 
 // --- DETALLE MODAL ---
