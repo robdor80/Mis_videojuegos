@@ -1,14 +1,24 @@
 // sw.js - Service Worker
-const CACHE_NAME = 'inventory-v1';
+const CACHE_NAME = 'inventory-v2';
 const urlsToCache = [
   './',
   './index.html',
+  './manifest.json',
   './css/styles.css',
   './js/ui.js',
   './js/data.js',
   './js/form.js',
   './js/firebase.js',
+  './js/pwa.js',
   './assets/header.webp',
+  './assets/icon.png',
+  './assets/locations/fanxiang.png',
+  './assets/locations/kesu.png',
+  './assets/locations/steam.png',
+  './assets/locations/ubisoft.png',
+  './assets/locations/wd_3.0.png',
+  'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
@@ -18,7 +28,14 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Cache abierta');
-        return cache.addAll(urlsToCache);
+        return Promise.allSettled(urlsToCache.map(url => cache.add(url)))
+          .then(results => {
+            results.forEach((result, index) => {
+              if (result.status === 'rejected') {
+                console.warn('No se pudo cachear:', urlsToCache[index], result.reason);
+              }
+            });
+          });
       })
   );
 });

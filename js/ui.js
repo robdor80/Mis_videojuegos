@@ -6,6 +6,8 @@ window.appState = {
     data: null         
 };
 
+const FALLBACK_COVER_URL = 'https://via.placeholder.com/200x300?text=Sin+imagen';
+
 document.addEventListener('DOMContentLoaded', () => {
     renderDashboard();
     updateDiskSpace();
@@ -82,6 +84,16 @@ function cleanText(text) {
     return text.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
 
+function escapeHtml(value) {
+    return (value ?? '').toString().replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+}
+
 async function performSearch(query) {
     const term = cleanText(query);
     if (term === '') {
@@ -113,7 +125,7 @@ async function performSearch(query) {
 
         contentDiv.innerHTML = '';
         if (resultados.length === 0) {
-            contentDiv.innerHTML = `<p style="text-align:center;color:#888; margin-top:20px;">No se encontraron juegos con "${query}".</p>`;
+            contentDiv.innerHTML = `<p style="text-align:center;color:#888; margin-top:20px;">No se encontraron juegos con "${escapeHtml(query)}".</p>`;
             return;
         }
 
@@ -190,7 +202,7 @@ async function showAllInventory() {
 
     } catch (error) {
         console.error(error);
-        contentDiv.innerHTML = `<p style="color:red">Error al cargar: ${error.message}</p>`;
+        contentDiv.innerHTML = `<p style="color:red">Error al cargar: ${escapeHtml(error.message)}</p>`;
     }
 }
 
@@ -253,7 +265,7 @@ async function openLocation(loc) {
 
     } catch (error) {
         console.error(error);
-        contentDiv.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+        contentDiv.innerHTML = `<p style="color:red">Error: ${escapeHtml(error.message)}</p>`;
     }
 }
 
@@ -264,14 +276,14 @@ function createGameCard(data, docId) {
     
     let total = (data.tamano || 0) + (data.tamanoUpdates || 0) + (data.tamanoMods || 0);
     let badges = '';
-    if(data.dlss) badges += `<span class="badge-dlss">DLSS ${data.dlssVersion||''}</span> `;
+    if(data.dlss) badges += `<span class="badge-dlss">DLSS ${escapeHtml(data.dlssVersion || '')}</span> `;
     if(data.tieneMods) badges += `<span class="badge-mods">MODS</span>`;
 
-    const imgUrl = data.imagenUrl || 'assets/no-image.jpg';
+    const imgUrl = data.imagenUrl || FALLBACK_COVER_URL;
     div.innerHTML = `
-        <img src="${imgUrl}" class="game-cover" onerror="this.src='https://via.placeholder.com/200x300?text=Error'">
+        <img src="${escapeHtml(imgUrl)}" class="game-cover" onerror="this.onerror=null;this.src='${FALLBACK_COVER_URL}'">
         <div class="game-info-overlay">
-            <div class="game-title">${data.nombre}</div>
+            <div class="game-title">${escapeHtml(data.nombre)}</div>
             <div class="game-meta"><span>${total.toFixed(1)} GB</span><span>${badges}</span></div>
         </div>
     `;
@@ -293,8 +305,8 @@ function openDetailModal(docId, data) {
     
     const extraDiv = document.getElementById('detailExtra');
     extraDiv.innerHTML = '';
-    if(data.tieneMods) extraDiv.innerHTML += `<p>• Mods: ${data.modsDescripcion}</p>`;
-    if(data.tieneSavegame) extraDiv.innerHTML += `<p>• Savegame: ${data.savegameNotas}</p>`;
+    if(data.tieneMods) extraDiv.innerHTML += `<p>• Mods: ${escapeHtml(data.modsDescripcion)}</p>`;
+    if(data.tieneSavegame) extraDiv.innerHTML += `<p>• Savegame: ${escapeHtml(data.savegameNotas)}</p>`;
     extraDiv.className = (extraDiv.innerHTML === '') ? 'detail-extra-box hidden' : 'detail-extra-box';
     
     document.getElementById('detailModal').classList.add('active');
