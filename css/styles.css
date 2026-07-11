@@ -111,6 +111,24 @@ body {
     color: white;
 }
 
+@media (max-width: 600px) and (orientation: portrait) {
+    .header-top-bar {
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .header-actions {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .header-actions .nav-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.15rem;
+    }
+}
+
 /* =========================================
    ZONA DE BÚSQUEDA
    ========================================= */
