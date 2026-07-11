@@ -87,6 +87,7 @@ body {
     color: black;
     font-size: 1.2rem;
     box-shadow: 0 0 15px var(--accent);
+    order: 1;
 }
 .btn-add:hover {
     background-color: white;
@@ -99,6 +100,7 @@ body {
     color: black;
     font-size: 1.1rem;
     box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    order: 4;
 }
 .btn-show-all:hover {
     background-color: var(--accent);
@@ -109,6 +111,11 @@ body {
 .btn-storage {
     background-color: #252525;
     color: white;
+    order: 2;
+}
+
+.btn-report {
+    order: 3;
 }
 
 /* =========================================
@@ -420,5 +427,5 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
     #btnManageLocations { order: 2; }
     #btnOpenReport { order: 3; }
     #btnShowAll { order: 4; }
-    #btnAddGame { order: 5; }
+    #btnAddGame { order: 5 !important; }
 }
