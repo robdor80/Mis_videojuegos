@@ -297,3 +297,91 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
     background-color: white; transform: scale(1.1) translateY(-5px); 
     box-shadow: 0 10px 20px rgba(255, 255, 255, 0.3);
 }
+
+@media print {
+    @page { size: A4 landscape; margin: 10mm; }
+
+    body {
+        background: white;
+        color: black;
+        padding: 0;
+    }
+
+    body > *:not(#reportModal) {
+        display: none !important;
+    }
+
+    #reportModal {
+        display: block !important;
+        position: static;
+        width: auto;
+        height: auto;
+        background: white;
+        backdrop-filter: none;
+    }
+
+    #reportModal .modal-content {
+        width: auto;
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background: white;
+        color: black;
+    }
+
+    #reportModal .close-modal,
+    #reportModal .report-toolbar {
+        display: none !important;
+    }
+
+    #reportModal h2 {
+        color: black;
+        margin-bottom: 8mm;
+    }
+
+    .report-summary {
+        color: black;
+        background: white;
+        border: 1px solid #999;
+        break-inside: avoid;
+    }
+
+    .report-table-wrapper {
+        overflow: visible;
+        border: none;
+    }
+
+    .report-table {
+        min-width: 0;
+        width: 100%;
+        background: white;
+        color: black;
+        page-break-inside: auto;
+    }
+
+    .report-table tr { page-break-inside: avoid; page-break-after: auto; }
+    .report-table th,
+    .report-table td {
+        color: black;
+        border-bottom: 1px solid #ccc;
+        padding: 6px;
+        font-size: 8pt;
+    }
+
+    .report-table th {
+        background: #eee;
+        color: black;
+        position: static;
+    }
+
+    .report-thumb {
+        width: 32px;
+        height: 44px;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
