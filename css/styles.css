@@ -111,26 +111,6 @@ body {
     color: white;
 }
 
-@media (max-width: 768px) {
-    .header-top-bar {
-        align-items: flex-start;
-        padding: 16px;
-    }
-
-    .header-actions {
-        flex-direction: row !important;
-        flex-wrap: nowrap;
-        gap: 8px;
-    }
-
-    .header-actions .nav-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.15rem;
-        flex: 0 0 auto;
-    }
-}
-
 /* =========================================
    ZONA DE BÚSQUEDA
    ========================================= */
@@ -412,5 +392,27 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
         height: 44px;
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .hero-header .header-top-bar {
+        justify-content: center;
+        align-items: flex-start;
+        gap: 8px;
+        height: auto;
+        padding: 16px 10px 0;
+    }
+
+    .hero-header .header-actions {
+        display: contents;
+    }
+
+    .hero-header .nav-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        font-size: 1.1rem;
+        flex: 0 0 auto;
     }
 }
