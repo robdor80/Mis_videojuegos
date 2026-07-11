@@ -415,4 +415,10 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
         font-size: 1.1rem;
         flex: 0 0 auto;
     }
+
+    #btnHome { order: 1; }
+    #btnManageLocations { order: 2; }
+    #btnOpenReport { order: 3; }
+    #btnShowAll { order: 4; }
+    #btnAddGame { order: 5; }
 }
