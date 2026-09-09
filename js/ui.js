@@ -68,11 +68,9 @@ function renderDashboard() {
                 <button type="button" class="location-action-btn edit-location" title="Editar almacenamiento">
                     <i class="fa-solid fa-pen"></i>
                 </button>
-                ${loc.custom ? `
-                    <button type="button" class="location-action-btn delete-location" title="Eliminar almacenamiento">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                ` : ''}
+                <button type="button" class="location-action-btn delete-location" title="Eliminar almacenamiento">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
             </div>
             <div class="card-image-box"><img src="${escapeHtml(loc.img)}" alt="${escapeHtml(loc.nombre)}"></div>
             <div class="card-info"><h3>${escapeHtml(loc.nombre)}</h3>${espacioHtml}</div>
@@ -529,7 +527,7 @@ async function saveLocation(event) {
 }
 
 async function deleteLocation(location) {
-    if(!location?.custom) return;
+    if(!location) return;
 
     try {
         const usedSnapshot = await db.collection("inventario").where("ubicacion", "==", location.id).limit(1).get();
@@ -541,7 +539,14 @@ async function deleteLocation(location) {
         const confirmed = confirm(`¿Eliminar "${location.nombre}"?`);
         if(!confirmed) return;
 
-        await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(location.docId).delete();
+        if (location.custom) {
+            await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(location.docId).delete();
+        } else {
+            await db.collection(STORAGE_LOCATIONS_COLLECTION).doc(location.docId).set({
+                deleted: true,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
         document.getElementById('locationModal').classList.remove('active');
         await reloadLocationsAndRefresh();
         alert("Almacenamiento eliminado.");

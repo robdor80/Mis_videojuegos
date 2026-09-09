@@ -69,6 +69,12 @@ async function loadLocationsData() {
 
         snapshot.forEach(doc => {
             const baseIndex = baseLocations.findIndex(location => location.id === doc.id);
+
+            if (doc.data().deleted === true) {
+                if (baseIndex >= 0) baseLocations.splice(baseIndex, 1);
+                return;
+            }
+
             const location = normalizeStorageLocation(doc, baseLocations[baseIndex]);
 
             if (!location) return;
