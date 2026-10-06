@@ -133,6 +133,10 @@ function setupFormSubmit() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        const user = await window.requireAuthForWrite();
+        if(!user) return;
+
         const docId = document.getElementById('docId').value;
         
         const item = {
