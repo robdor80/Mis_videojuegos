@@ -10,13 +10,19 @@ const firebaseConfig = {
   appId: "1:156172344529:web:b3d77637346ff2ec6af9f0"
 };
 
-// 2. INICIALIZAR FIREBASE (Usando el namespace global 'firebase')
+// 2. INICIALIZAR FIREBASE
 const app = firebase.initializeApp(firebaseConfig);
 
-// 3. INICIALIZAR BASE DE DATOS Y AUTENTICACIÓN
+// 3. INICIALIZAR FIRESTORE Y AUTH
 const db = firebase.firestore();
 const auth = firebase.auth();
+
+const ADMIN_UID = "wAzU5JnS8bVJUyQEZu84LJFCe5A3";
+
 const googleProvider = new firebase.auth.GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: "select_account"
+});
 
 // Mantener la sesión iniciada en este navegador.
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
@@ -24,24 +30,51 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
 });
 
 /**
- * Exige autenticación Google antes de cualquier operación que modifique Firestore.
+ * Devuelve true si el usuario indicado es el administrador autorizado.
+ */
+function isAdminUser(user) {
+  return !!user && user.uid === ADMIN_UID;
+}
+
+/**
+ * Exige autenticación con la cuenta administradora antes de permitir
+ * cualquier operación que modifique Firestore.
  *
- * IMPORTANTE:
- * Esta primera fase solo crea el usuario autenticado para obtener su UID.
- * La autorización definitiva del administrador se hará después mediante el UID
- * y las reglas de seguridad de Firestore.
+ * La web sigue siendo pública para lectura y navegación.
+ * La seguridad real también debe reforzarse con reglas de Firestore.
  *
  * @returns {Promise<firebase.User|null>}
  */
 async function requireAuthForWrite() {
-  if (auth.currentUser) {
-    return auth.currentUser;
+  let user = auth.currentUser;
+
+  // Si ya está iniciada la sesión correcta, continuar sin volver a preguntar.
+  if (isAdminUser(user)) {
+    return user;
+  }
+
+  // Si quedó iniciada una cuenta distinta (por ejemplo, durante pruebas),
+  // cerramos esa sesión para permitir elegir la cuenta administradora.
+  if (user && !isAdminUser(user)) {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error("No se pudo cerrar la sesión no autorizada:", error);
+    }
   }
 
   try {
     const result = await auth.signInWithPopup(googleProvider);
-    console.info("🔐 Firebase Auth correcto. UID:", result.user.uid);
-    return result.user;
+    user = result.user;
+
+    if (!isAdminUser(user)) {
+      await auth.signOut();
+      alert("Esta cuenta de Google no está autorizada para modificar el inventario.");
+      return null;
+    }
+
+    console.info("🔐 Administrador autenticado correctamente.");
+    return user;
   } catch (error) {
     if (error.code !== "auth/popup-closed-by-user" &&
         error.code !== "auth/cancelled-popup-request") {
@@ -53,6 +86,7 @@ async function requireAuthForWrite() {
 }
 
 window.requireAuthForWrite = requireAuthForWrite;
+window.isAdminUser = isAdminUser;
 
 // 4. CONFIRMACIÓN EN CONSOLA
 console.log("🔥 Firebase conectado:", app.name);
