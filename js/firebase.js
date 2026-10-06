@@ -88,5 +88,30 @@ async function requireAuthForWrite() {
 window.requireAuthForWrite = requireAuthForWrite;
 window.isAdminUser = isAdminUser;
 
+/**
+ * Botón de cierre de sesión.
+ * Solo se muestra mientras haya una sesión Firebase activa.
+ */
+function setupAuthUi() {
+  const btnLogout = document.getElementById("btnLogout");
+  if (!btnLogout) return;
+
+  auth.onAuthStateChanged((user) => {
+    btnLogout.classList.toggle("hidden", !user);
+  });
+
+  btnLogout.addEventListener("click", async () => {
+    try {
+      await auth.signOut();
+      alert("Sesión cerrada correctamente.");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      alert("No se pudo cerrar la sesión.");
+    }
+  });
+}
+
+setupAuthUi();
+
 // 4. CONFIRMACIÓN EN CONSOLA
 console.log("🔥 Firebase conectado:", app.name);
