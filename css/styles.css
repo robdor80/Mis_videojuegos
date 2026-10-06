@@ -108,6 +108,20 @@ body {
     box-shadow: 0 0 20px var(--accent);
 }
 
+/* Botón Cerrar sesión: aparece solo cuando existe una sesión Firebase activa */
+.btn-logout {
+    background-color: #252525;
+    color: white;
+    font-size: 1.05rem;
+    order: 5;
+}
+.btn-logout:hover {
+    background-color: #cf6679;
+    color: black;
+    border-color: #cf6679;
+    box-shadow: 0 0 20px rgba(207, 102, 121, 0.55);
+}
+
 .btn-storage {
     background-color: #252525;
     color: white;
@@ -427,5 +441,6 @@ input, select, textarea { width: 100%; padding: 12px; background: #121212; borde
     #btnManageLocations { order: 2; }
     #btnOpenReport { order: 3; }
     #btnShowAll { order: 4; }
-    #btnAddGame { order: 5 !important; }
+    #btnLogout { order: 5; }
+    #btnAddGame { order: 6 !important; }
 }
