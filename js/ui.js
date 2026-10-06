@@ -28,7 +28,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const btnEdit = document.getElementById('btnEditGame');
     if(btnEdit) {
-        btnEdit.addEventListener('click', () => {
+        btnEdit.addEventListener('click', async () => {
+            const user = await window.requireAuthForWrite();
+            if(!user) return;
+
             if(window.currentGameId && window.currentGameData) {
                 document.getElementById('detailModal').classList.remove('active');
                 openEditForm(window.currentGameId, window.currentGameData);
@@ -78,8 +81,12 @@ function renderDashboard() {
 
         const editBtn = card.querySelector('.edit-location');
         if(editBtn) {
-            editBtn.addEventListener('click', (event) => {
+            editBtn.addEventListener('click', async (event) => {
                 event.stopPropagation();
+
+                const user = await window.requireAuthForWrite();
+                if(!user) return;
+
                 openLocationForm(loc);
             });
         }
@@ -333,6 +340,9 @@ function createGameCard(data, docId) {
 async function deleteGame(docId, data) {
     if(!docId) return;
 
+    const user = await window.requireAuthForWrite();
+    if(!user) return;
+
     const name = data?.nombre || 'este elemento';
     const confirmed = confirm(`¿Eliminar "${name}" del inventario?`);
     if(!confirmed) return;
@@ -422,7 +432,10 @@ function setupModalEvents() {
     const formModal = document.getElementById('formModal');
     const btnAdd = document.getElementById('btnAddGame');
     const closeForm = document.querySelector('.close-form-modal');
-    if(btnAdd) btnAdd.addEventListener('click', () => {
+    if(btnAdd) btnAdd.addEventListener('click', async () => {
+        const user = await window.requireAuthForWrite();
+        if(!user) return;
+
         document.getElementById('gameForm').reset();
         document.getElementById('docId').value = "";
         document.getElementById('formTitle').innerText = "Añadir Nuevo Título";
@@ -450,7 +463,14 @@ function setupModalEvents() {
 // --- GESTION DE UBICACIONES ---
 function setupLocationEvents() {
     const btnManageLocations = document.getElementById('btnManageLocations');
-    if(btnManageLocations) btnManageLocations.addEventListener('click', () => openLocationForm());
+    if(btnManageLocations) {
+        btnManageLocations.addEventListener('click', async () => {
+            const user = await window.requireAuthForWrite();
+            if(!user) return;
+
+            openLocationForm();
+        });
+    }
 
     const locationForm = document.getElementById('locationForm');
     if(locationForm) {
@@ -484,6 +504,9 @@ function openLocationForm(location = null) {
 
 async function saveLocation(event) {
     event.preventDefault();
+
+    const user = await window.requireAuthForWrite();
+    if(!user) return;
 
     const form = event.currentTarget;
     const docId = document.getElementById('locationDocId').value;
@@ -528,6 +551,9 @@ async function saveLocation(event) {
 
 async function deleteLocation(location) {
     if(!location) return;
+
+    const user = await window.requireAuthForWrite();
+    if(!user) return;
 
     try {
         const usedSnapshot = await db.collection("inventario").where("ubicacion", "==", location.id).limit(1).get();
