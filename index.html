@@ -6,8 +6,6 @@
     
     <meta name="theme-color" content="#bb86fc">
     <meta name="description" content="Gestor de inventario de videojuegos y programas">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="assets/icon.png">
 
     <title>Mis Videojuegos</title>
     <link rel="stylesheet" href="css/styles.css">
@@ -244,7 +242,29 @@
     <script src="js/ui.js"></script>
     <script src="js/form.js"></script>
     <script src="js/report.js"></script>
-    <script src="js/pwa.js"></script>
+
+    <script>
+        // Limpieza de instalaciones PWA anteriores: la web funciona ahora como sitio normal.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(registration => registration.unregister()));
+
+                    if ('caches' in window) {
+                        const cacheNames = await caches.keys();
+                        await Promise.all(
+                            cacheNames
+                                .filter(name => name.startsWith('inventory-'))
+                                .map(name => caches.delete(name))
+                        );
+                    }
+                } catch (error) {
+                    console.warn('No se pudo completar la limpieza del antiguo modo PWA:', error);
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>
